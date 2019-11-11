@@ -1,0 +1,70 @@
+version: "3.7"
+services:
+  scheduler:
+    build: ./scheduler
+    depends_on:
+      - worker
+    networks:
+      - vauth-message
+  worker:
+    build: ./worker
+    depends_on:
+      - nats
+    networks:
+      - vauth-message
+      - vauth-backend
+    environment:
+    - VSPHERE_SERVER=grtvcenter01.grt.local
+    - VSPHERE_USERNAME=vauth@vsphere.local
+    - VSPHERE_PASSWORD=Hashicorp1#
+    - VSPHERE_DATACENTER=GRT
+  syncer:
+    build: ./syncer
+    depends_on:
+      - nats
+      - worker
+    networks:
+      - vauth-message
+    environment:
+    - VSPHERE_SERVER=grtvcenter01.grt.local
+    - VSPHERE_USERNAME=vauth@vsphere.local
+    - VSPHERE_PASSWORD=Hashicorp1#
+    - VSPHERE_DATACENTER=GRT
+  watcher:
+    build: ./watcher
+    depends_on:
+      - nats
+      - worker
+    networks:
+      - vauth-message
+    environment:
+    - VSPHERE_SERVER=grtvcenter01.grt.local
+    - VSPHERE_USERNAME=vauth@vsphere.local
+    - VSPHERE_PASSWORD=Hashicorp1#
+    - VSPHERE_DATACENTER=GRT
+  nats:
+    image: nats:latest
+    ports: 
+      - "4222:4222"
+    networks:
+      - vauth-message
+  backend:
+    build: ./backend
+    ports:
+    - "8090:8090"
+    depends_on:
+      - db
+      - nats
+    networks:
+      - vauth-backend
+      - vauth-message
+  db:
+    image: cockroachdb/cockroach:v19.1.5
+    ports:
+     - "8080:8080"
+    networks:
+      - vauth-backend
+    command: ["start", "--insecure"]
+networks:
+  vauth-backend:
+  vauth-message:

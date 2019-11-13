@@ -27,7 +27,7 @@ func homeLink(w http.ResponseWriter, r *http.Request) {
 
 func createVMRecord(w http.ResponseWriter, r *http.Request) {
 	VMName := mux.Vars(r)["name"]
-	fmt.Println(VMName)
+	log.Printf("Updating database record for %s", VMName)
 	var vm VM
 	_ = json.NewDecoder(r.Body).Decode(&vm)
 	json.NewEncoder(w).Encode(vm)
@@ -40,8 +40,6 @@ func createVMRecord(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 	log.Print("Successfully connected to the database")
 
-	fmt.Fprint(w, "POST done")
-
 	// Insert two rows into the "vms" table.
 	if _, err := db.Exec(
 		"UPSERT INTO vms (name, datacenter, secretkey, folder) VALUES ('" + vm.Name + "' , '" + vm.Datacenter + "' , '" + vm.Secretkey + "' , '" + vm.Folder + "')"); err != nil {
@@ -53,11 +51,29 @@ func createVMRecord(w http.ResponseWriter, r *http.Request) {
 func getVMRecord(w http.ResponseWriter, r *http.Request) {
 	VMName := mux.Vars(r)["name"]
 	log.Printf("The record for %s was requested", VMName)
-	for _, vm := range vms {
-		if vm.Name == VMName {
-			json.NewEncoder(w).Encode(vm)
-		}
+
+	// Connect to the database
+	log.Print("Connecting to the database")
+	db, err := sql.Open("postgres", "postgresql://root@db:26257/vauth?sslmode=disable")
+	if err != nil {
+		log.Fatal("error connecting to the database: ", err)
 	}
+	defer db.Close()
+	log.Print("Successfully connected to the database")
+	rows, err := db.Query("SELECT name, datacenter, secretkey, folder FROM vms WHERE name='" + VMName + "'")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+	var data VM
+	for rows.Next() {
+		var name, datacenter, secretkey, folder string
+		if err := rows.Scan(&name, &datacenter, &secretkey, &folder); err != nil {
+			log.Fatal(err)
+		}
+		data = VM{Name: name, Datacenter: datacenter, Secretkey: secretkey, Folder: folder}
+	}
+	json.NewEncoder(w).Encode(data)
 }
 
 func deleteVMRecord(w http.ResponseWriter, r *http.Request) {

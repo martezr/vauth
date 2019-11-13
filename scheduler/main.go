@@ -1,17 +1,14 @@
 package main
 
 import (
+	"github.com/jasonlvhit/gocron"
 	nats "github.com/nats-io/nats.go"
 	"log"
-
-	"github.com/jasonlvhit/gocron"
 )
 
 func main() {
 	s := gocron.NewScheduler()
-	var syncInterval uint64
-	syncInterval = 60
-	s.Every(syncInterval).Minutes().Do(sync)
+	s.Every(60).Minutes().Do(sync)
 	<-s.Start()
 }
 
@@ -27,6 +24,5 @@ func sync() {
 	if err := nc.Publish("sync", []byte("Sync VMs")); err != nil {
 		log.Fatal(err)
 	}
-
-	log.Println("Syncing VMs")
+	log.Println("Scheduling VM synchronization process")
 }

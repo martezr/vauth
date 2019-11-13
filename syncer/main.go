@@ -30,10 +30,10 @@ func main() {
 	wg := sync.WaitGroup{}
 	wg.Add(1)
 
-	// Subscribe
+	// Subscribe to the "sync" topic
 	if _, err := nc.Subscribe("sync", func(m *nats.Msg) {
 
-		// Creating a connection context
+		// Run the syncVM function to fetch a list of VMs to sync
 		vms := syncVM()
 		for _, name := range vms {
 			if err := nc.Publish("updates", []byte(name)); err != nil {
@@ -45,7 +45,6 @@ func main() {
 	}
 	// Wait for a message to come in
 	wg.Wait()
-
 }
 
 func syncVM() (vmnames []string) {
@@ -87,6 +86,7 @@ func syncVM() (vmnames []string) {
 		var props mo.VirtualMachine
 		machine.Properties(ctx, vmdata.Reference(), nil, &props)
 		var vmconfig []string
+		// Evaluate if a virtual machine object is not a template and is powered on
 		if props.Summary.Config.Template == false && props.Summary.Runtime.PowerState == "poweredOn" {
 			for _, v := range props.Config.ExtraConfig {
 				if strings.HasPrefix(v.GetOptionValue().Key, "guestinfo.vault.") {
@@ -97,8 +97,10 @@ func syncVM() (vmnames []string) {
 				log.Printf("%s is missing Vault config", vmdata.Name())
 				vmnames = append(vmnames, vmdata.Name())
 			}
-		} else {
-			log.Printf("Skipped %s due to power state %s", vmdata.Name(), props.Summary.Runtime.PowerState)
+		} else if props.Summary.Config.Template == true {
+			log.Printf("%s has been marked as a template and will be skipped", vmdata.Name())
+		} else if props.Summary.Runtime.PowerState == "poweredOff" {
+			log.Printf("Skipped %s due to a power state of %s", vmdata.Name(), props.Summary.Runtime.PowerState)
 		}
 	}
 	return vmnames

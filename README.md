@@ -3,7 +3,7 @@ VMware vSphere VM Identity Platform
 
 # vAuth Architecture
 
-![](./vAuth_Architecture.png)
+![](./vauth-architecture.png)
 
 |Component|Description|
 |---------|-----------|

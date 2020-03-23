@@ -1,0 +1,31 @@
+<!-- Copyright (c) 2018 VMware, Inc. All rights reserved. -->
+
+<clr-stack-view *ngIf="chassis">
+   <clr-stack-header>
+      {{ 'tabs.configure.settings.chassisSettings' | translate }}
+      <button
+            (click)="onEdit()"
+            class="stack-action btn btn-md btn-link"
+            type="button">{{ 'common.edit' | translate }}
+      </button>
+   </clr-stack-header>
+
+   <clr-stack-block>
+      <clr-stack-label>{{ 'common.name' | translate }}</clr-stack-label>
+      <clr-stack-content>{{chassis.name}}</clr-stack-content>
+   </clr-stack-block>
+   <clr-stack-block>
+      <clr-stack-label>{{ 'common.serverType' | translate }}</clr-stack-label>
+      <clr-stack-content>{{chassis.serverType}}</clr-stack-content>
+   </clr-stack-block>
+   <clr-stack-block>
+      <clr-stack-label>{{ 'common.dimensions' | translate }}</clr-stack-label>
+      <clr-stack-content>{{chassis.dimensions}}</clr-stack-content>
+   </clr-stack-block>
+   <clr-stack-block>
+      <clr-stack-label>{{ 'common.state' | translate }}</clr-stack-label>
+      <clr-stack-content>
+         <chassis-status [isActive]="chassis.isActive"></chassis-status>
+      </clr-stack-content>
+   </clr-stack-block>
+</clr-stack-view>

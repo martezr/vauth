@@ -1,0 +1,28 @@
+<!-- Copyright (c) 2018 VMware, Inc. All rights reserved. -->
+
+<div class="form-group" [ngStyle]="customStyle">
+    <label for="{{inputId}}" class="{{valueRequired? 'required' : ''}}">{{labelValue | translate}}</label>
+    <input *ngIf="!valueRequired"
+           type="text"
+           id="{{inputId}}"
+           size="{{inputSize}}"
+           placeholder="{{placeholderValue | translate}}"
+           [ngModel]="inputValue"
+           (ngModelChange)="onInputValueChanged($event)">
+
+    <label *ngIf="valueRequired"
+           for="{{inputId}}_with_tooltip"
+           [class.invalid]="invalidValue"
+           aria-haspopup="true" role="tooltip"
+           class="tooltip tooltip-validation tooltip-bottom-left tooltip-md">
+        <input type="text"
+               id="{{inputId}}_with_tooltip"
+               size="{{inputSize}}"
+               placeholder="{{placeholderValue | translate}}"
+               [ngModel]="inputValue"
+               (ngModelChange)="onInputValueChanged($event)" required>
+        <span class="tooltip-content">
+            {{invalidValueError}}
+        </span>
+    </label>
+</div>

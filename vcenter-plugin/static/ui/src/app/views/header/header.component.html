@@ -1,0 +1,28 @@
+<!-- Copyright (c) 2018 VMware, Inc. All rights reserved. -->
+
+<div *ngIf="chassis">
+   <span class="chassis-title">{{chassis.name}}</span>
+   <clr-dropdown [clrCloseMenuOnItemClick]="true">
+      <button type="button" class="dropdown-toggle btn btn-link" clrDropdownTrigger>
+         {{ 'common.actions' | translate }}
+         <clr-icon shape="caret down" class="is-info"></clr-icon>
+      </button>
+      <clr-dropdown-menu>
+         <button type="button" clrDropdownItem (click)="onEdit()"><clr-icon shape="edit"></clr-icon> {{ 'common.edit' | translate }}</button>
+         <button type="button" clrDropdownItem (click)="onDelete()"><clr-icon shape="times-circle"></clr-icon> {{ 'common.delete' | translate }}</button>
+         <button type="button" class="btn btn-link" clrDropdownItem [ngClass]="(chassis.isActive) ? 'disabled' : 'enabled'"
+                 (click)="(!chassis.isActive) ? onActivate() : null">
+            <clr-icon shape="check"></clr-icon>
+            {{ 'common.activate' | translate }}
+         </button>
+      </clr-dropdown-menu>
+   </clr-dropdown>
+
+   <clr-alert [clrAlertType]="'alert-success'" [clrAlertSizeSmall]="true" (clrAlertClosedChange)="onAlertClose()" *ngIf="this.showAlert">
+      <div class="alert-item">
+           <span class="alert-text">
+               {{ 'header.theChassisIsNowActive' | translate }}
+           </span>
+      </div>
+   </clr-alert>
+</div>

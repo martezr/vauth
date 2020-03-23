@@ -1,0 +1,36 @@
+/* Copyright (c) 2018 VMware, Inc. All rights reserved. */
+/* You can add global styles to this file, and also import other style files */
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 24px 28px 0 0;
+}
+
+clr-icon {
+  margin-bottom: 3px;
+}
+
+.info-icon {
+  color: var(--info-icon-color);
+}
+
+form.modal-content-chassis {
+  padding: 10px 0 0 24px;
+}
+
+form.modal-content-delete {
+  padding: 0 0 0 24px;
+}
+
+form.vm-action-modal-content {
+  padding: 0 0 0 24px;
+}
+
+.viewTitle {
+  font-size: 20px;
+  padding-bottom: 10px;
+}
+
+.chassis-list-view .chassises-datagrid-container .datagrid-overlay-wrapper{
+  margin-top: 30px;
+}

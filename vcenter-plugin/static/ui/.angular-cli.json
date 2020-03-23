@@ -1,0 +1,94 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "project": {
+    "name": "remote-plugin-sample-ui"
+  },
+  "apps": [
+    {
+      "root": "src",
+      "outDir": "../../../target/classes/ui",
+      "assets": [
+        "assets",
+        {
+          "glob": "css-vars-ponyfill.js",
+          "input": "../node_modules/css-vars-ponyfill/dist/",
+          "output": "scripts/"
+        },
+        {
+          "glob": "mutationobserver.min.js",
+          "input": "../node_modules/mutationobserver-shim/dist/",
+          "output": "scripts/"
+        }
+      ],
+      "index": "index.html",
+      "main": "main.ts",
+      "polyfills": "polyfills.ts",
+      "test": "test.ts",
+      "tsconfig": "tsconfig.app.json",
+      "testTsconfig": "tsconfig.spec.json",
+      "prefix": "app",
+      "styles": [
+        {
+          "input": "../node_modules/clarity-icons/clarity-icons.min.css",
+          "output": "styles",
+          "lazy": true
+        },
+        {
+          "input": "styles.css",
+          "output": "styles",
+          "lazy": true
+        },
+        {
+          "input": "../node_modules/clarity-ui/clarity-ui.min.css",
+          "output": "theme-light",
+          "lazy": true
+        },
+        {
+          "input": "styles-light.css",
+          "output": "theme-light",
+          "lazy": true
+        },
+        {
+          "input": "../node_modules/clarity-ui/clarity-ui-dark.min.css",
+          "output": "theme-dark",
+          "lazy": true
+        },
+        {
+          "input": "styles-dark.css",
+          "output": "theme-dark",
+          "lazy": true
+        }
+      ],
+      "environmentSource": "environments/environment.ts",
+      "environments": {
+        "dev": "environments/environment.ts",
+        "prod": "environments/environment.prod.ts"
+      }
+    }
+  ],
+  "e2e": {
+    "protractor": {
+      "config": "./protractor.conf.js"
+    }
+  },
+  "lint": [
+    {
+      "project": "src/tsconfig.app.json"
+    },
+    {
+      "project": "src/tsconfig.spec.json"
+    },
+    {
+      "project": "e2e/tsconfig.e2e.json"
+    }
+  ],
+  "test": {
+    "karma": {
+      "config": "./karma.conf.js"
+    }
+  },
+  "defaults": {
+    "styleExt": "css",
+    "component": {}
+  }
+}

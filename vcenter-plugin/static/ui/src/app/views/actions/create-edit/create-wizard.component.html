@@ -1,0 +1,108 @@
+<!-- Copyright (c) 2018 VMware, Inc. All rights reserved. -->
+
+<clr-wizard #wizard
+            [clrWizardOpen]="true"
+            [clrWizardSize]="'lg'"
+            [clrWizardPreventModalAnimation]="true"
+            class="clr-wizard--inline clr-wizard--no-shadow"
+            style="height: 500px;">
+
+    <clr-wizard-title>Add Chassis</clr-wizard-title>
+
+    <clr-wizard-button [type]="'cancel'" (click)="onCancel()">{{ 'common.cancel' | translate }}</clr-wizard-button>
+    <clr-wizard-button [type]="'previous'">{{ 'common.back' | translate }}</clr-wizard-button>
+    <clr-wizard-button [type]="'next'">{{ 'common.next' | translate }}</clr-wizard-button>
+    <clr-wizard-button [type]="'finish'">{{ 'common.ok' | translate }}</clr-wizard-button>
+
+    <clr-wizard-page [clrWizardPageNextDisabled]="!isValid()">
+        <ng-template clrPageTitle>
+            {{ 'actions.create.wizardPage1' | translate }}
+        </ng-template>
+        <form>
+            <modal-label-input
+                    [customStyle]="{'padding-left': '120px'}"
+                    [inputId]="'chassisName'"
+                    [inputValue]="chassis.name"
+                    [labelValue]="'common.name'"
+                    [placeholderValue]="'actions.namePlaceholder'"
+                    [valueRequired]="true"
+                    [invalidValue]="!isValid() || chassisExists"
+                    [invalidValueError]="invalidNameError()"
+                    (inputValueChanged)="nameChanged($event)">
+            </modal-label-input>
+
+            <modal-label-input
+                    [customStyle]="{'padding-left': '120px'}"
+                    [inputId]="'chassisServerType'"
+                    [inputValue]="chassis.serverType"
+                    [labelValue]="'common.serverType'"
+                    [placeholderValue]="'actions.serverTypePlaceholder'"
+                    (inputValueChanged)="serverTypeChanged($event)">
+            </modal-label-input>
+        </form>
+    </clr-wizard-page>
+    <clr-wizard-page>
+        <ng-template clrPageTitle>
+            {{ 'actions.create.wizardPage2' | translate }}
+        </ng-template>
+        <form>
+            <modal-label-input
+                    [customStyle]="{'padding-left': '120px'}"
+                    [inputId]="'chassisDimensions'"
+                    [inputValue]="chassis.dimensions"
+                    [labelValue]="'common.dimensions'"
+                    [placeholderValue]="'actions.dimensionsPlaceholder'"
+                    (inputValueChanged)="dimensionsChanged($event)">
+            </modal-label-input>
+
+            <div class="form-group" style="padding-left: 120px">
+                <label>
+                    {{ 'common.state' | translate }}:
+                    <div role="tooltip" aria-haspopup="true" class="tooltip tooltip-md tooltip-top-right">
+                        <clr-icon class="info-icon" shape="info-circle" size="18"></clr-icon>
+                        <span class="tooltip-content">{{ 'actions.whatCanTheStateBe' | translate }}</span>
+                    </div>
+                </label>
+                <clr-checkbox id="chassisState" name="state" [(ngModel)]="chassis.isActive ">
+                    {{ 'common.active' | translate }}
+                </clr-checkbox>
+            </div>
+        </form>
+    </clr-wizard-page>
+    <clr-wizard-page #myFinishPage (clrWizardPageOnLoad)="loadReadyToCompletePageData()"
+                     clrWizardPagePreventDefault="true"
+                     (clrWizardPageOnCommit)="onSubmit()"
+                     (clrWizardPageOnCancel)="onCancel()"
+                     (clrWizardPagePrevious)="onGoBack()">
+        <ng-template clrPageTitle>
+            {{ 'actions.create.wizardPage3' | translate }}
+        </ng-template>
+        <form>
+            <clr-alert *ngIf="chassisExists" clrAlertType="alert-danger">
+                <div class="alert-item">
+                    {{ 'actions.create.usedNameError' | translate }}
+                </div>
+            </clr-alert>
+            <form>
+                <div class="form-group" style="margin-bottom: 0px">
+                    <span>{{ 'common.name' | translate }}:</span>
+                    <span>{{readyToCompleteData.name}}</span>
+                </div>
+                <div class="form-group" style="margin-bottom: 0px">
+                    <span>{{ 'common.serverType' | translate }}:</span>
+                    <span>{{readyToCompleteData.serverType}}</span>
+                </div>
+                <div class="form-group" style="margin-bottom: 0px">
+                    <span>{{ 'common.dimensions' | translate }}:</span>
+                    <span>{{readyToCompleteData.dimensions}}</span>
+                </div>
+                <div class="form-group" style="margin-bottom: 0px">
+                    <span>{{ 'common.state' | translate }}:</span>
+                    <span>
+                    <chassis-status [isActive]="readyToCompleteData.state"></chassis-status>
+                </span>
+                </div>
+            </form>
+        </form>
+    </clr-wizard-page>
+</clr-wizard>

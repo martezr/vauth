@@ -1,5 +1,11 @@
 version: "3.7"
 services:
+#  ui:
+#    build: ./ui
+#    ports: 
+#      - "4200:4200"
+#    networks:
+#      - vauth-backend
   scheduler:
     build: ./scheduler
     depends_on:
@@ -51,20 +57,37 @@ services:
   backend:
     build: ./backend
     ports:
-    - "8090:8090"
+    - "443:443"
     depends_on:
       - db
       - nats
     networks:
       - vauth-backend
       - vauth-message
+      - vauth-database
   db:
     image: cockroachdb/cockroach:v19.1.5
     ports:
      - "8080:8080"
     networks:
-      - vauth-backend
-    command: ["start", "--insecure"]
+      - vauth-database
+    command: ["start","--insecure"]
+    secrets:
+      - db_cert
+      - db_key
+    volumes:
+      - database-volume:/cockroach/cockroach-data
+
+secrets:
+   db_cert:
+     file: ./backend/cert.pem
+   db_key:
+     file: ./backend/key.pem
+
 networks:
   vauth-backend:
   vauth-message:
+  vauth-database:
+
+volumes:
+  database-volume:

@@ -1,0 +1,35 @@
+<div class="component-container">
+   <clr-datagrid [clrDgLoading]="loading"
+                 [(clrDgSelected)]="selectedChassis"
+                 [clDgRowSelection]="true">
+      <clr-dg-action-bar>
+         <div class="btn-group">
+            <button type="button" class="btn btn-sm btn-link clr-no-border-button"
+                    (click)="updateChassisRelation()">
+               <clr-icon shape="plus"></clr-icon>
+               Update
+            </button>
+         </div>
+      </clr-dg-action-bar>
+      <clr-dg-placeholder>{{ 'list.noData' | translate }}
+      </clr-dg-placeholder>
+
+      <clr-dg-column>{{ 'common.name' | translate }}</clr-dg-column>
+      <clr-dg-column>{{ 'common.state' | translate }}</clr-dg-column>
+
+      <clr-dg-row *clrDgItems="let chassis of chassisList"
+                  [clrDgItem]="chassis">
+         <clr-dg-cell>
+            <clr-icon shape="chassisIcon"></clr-icon>
+            <span>{{chassis.name}}</span>
+         </clr-dg-cell>
+         <clr-dg-cell>
+            <chassis-status [isActive]="chassis.isActive"></chassis-status>
+         </clr-dg-cell>
+      </clr-dg-row>
+      <clr-dg-footer>
+         <clr-dg-pagination #pagination
+                            [clrDgPageSize]="numberOfChassisPerPage"></clr-dg-pagination>
+      </clr-dg-footer>
+   </clr-datagrid>
+</div>

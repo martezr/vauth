@@ -1,0 +1,29 @@
+<!-- Copyright (c) 2018 VMware, Inc. All rights reserved. -->
+<div class="viewTitle">{{ 'common.settings' | translate }}</div>
+
+<div class="alert alert-success" *ngIf="showSuccessMessage">
+    <div class="alert-items">
+        <div class="alert-item static">
+            <div class="alert-icon-wrapper">
+                <clr-icon class="alert-icon" shape="check-circle"></clr-icon>
+            </div>
+            <span class="alert-text">
+                {{ 'settings.theNumberOfDisplayedChassisPerPage' | translate }}
+                '{{numberOfChassisPerPage}}' {{ 'settings.wasUpdatedInTheWebLocalStorage' | translate }}.
+            </span>
+        </div>
+    </div>
+</div>
+<div style="direction: rtl">
+    <button class="btn btn-sm" (click)="onUpdate()">{{ 'common.update' | translate }}</button>
+</div>
+<clr-stack-view>
+    <clr-stack-block>
+        <clr-stack-label>{{ 'settings.numberOfChassisPerPage' | translate }}</clr-stack-label>
+        <clr-stack-content>
+            <span>
+            <input type="number" min="1" max="20"  [(ngModel)]="numberOfChassisPerPage"/>
+                </span>
+        </clr-stack-content>
+    </clr-stack-block>
+</clr-stack-view>

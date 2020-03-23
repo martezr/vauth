@@ -15,7 +15,7 @@ import (
 type VM struct {
 	Name       string `json:"Name"`
 	Datacenter string `json:"Datacenter"`
-	Folder     string `json:"Folder"`
+	Role       string `json:"Role"`
 	Secretkey  string `json:"Secretkey"`
 }
 
@@ -40,9 +40,9 @@ func createVMRecord(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 	log.Print("Successfully connected to the database")
 
-	// Insert two rows into the "vms" table.
+	// Insert or update the VM info into the "vms" table.
 	if _, err := db.Exec(
-		"UPSERT INTO vms (name, datacenter, secretkey, folder) VALUES ('" + vm.Name + "' , '" + vm.Datacenter + "' , '" + vm.Secretkey + "' , '" + vm.Folder + "')"); err != nil {
+		"UPSERT INTO vms (name, datacenter, secretkey, role) VALUES ('" + vm.Name + "' , '" + vm.Datacenter + "' , '" + vm.Secretkey + "' , '" + vm.Role + "')"); err != nil {
 		log.Fatal(err)
 	}
 
@@ -60,30 +60,20 @@ func getVMRecord(w http.ResponseWriter, r *http.Request) {
 	}
 	defer db.Close()
 	log.Print("Successfully connected to the database")
-	rows, err := db.Query("SELECT name, datacenter, secretkey, folder FROM vms WHERE name='" + VMName + "'")
+	rows, err := db.Query("SELECT name, datacenter, secretkey, role FROM vms WHERE name='" + VMName + "'")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer rows.Close()
 	var data VM
 	for rows.Next() {
-		var name, datacenter, secretkey, folder string
-		if err := rows.Scan(&name, &datacenter, &secretkey, &folder); err != nil {
+		var name, datacenter, secretkey, role string
+		if err := rows.Scan(&name, &datacenter, &secretkey, &role); err != nil {
 			log.Fatal(err)
 		}
-		data = VM{Name: name, Datacenter: datacenter, Secretkey: secretkey, Folder: folder}
+		data = VM{Name: name, Datacenter: datacenter, Secretkey: secretkey, Role: role}
 	}
 	json.NewEncoder(w).Encode(data)
-}
-
-func deleteVMRecord(w http.ResponseWriter, r *http.Request) {
-	VMName := mux.Vars(r)["name"]
-
-	for _, vm := range vms {
-		if vm.Name == VMName {
-			json.NewEncoder(w).Encode(vm)
-		}
-	}
 }
 
 func getAllVMs(w http.ResponseWriter, r *http.Request) {
@@ -95,25 +85,25 @@ func getAllVMs(w http.ResponseWriter, r *http.Request) {
 	}
 	defer db.Close()
 	log.Print("Successfully connected to the database")
-	rows, err := db.Query("SELECT name, datacenter, secretkey, folder FROM vms")
+	rows, err := db.Query("SELECT name, datacenter, secretkey, role FROM vms")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer rows.Close()
 	vms = nil
 	for rows.Next() {
-		var name, datacenter, secretkey, folder string
-		if err := rows.Scan(&name, &datacenter, &secretkey, &folder); err != nil {
+		var name, datacenter, secretkey, role string
+		if err := rows.Scan(&name, &datacenter, &secretkey, &role); err != nil {
 			log.Fatal(err)
 		}
-		vms = append(vms, VM{Name: name, Datacenter: datacenter, Secretkey: secretkey, Folder: folder})
+		vms = append(vms, VM{Name: name, Datacenter: datacenter, Secretkey: secretkey, Role: role})
 	}
 	json.NewEncoder(w).Encode(vms)
 	log.Print("User requested all VMs")
 }
 
 func syncVMs(w http.ResponseWriter, r *http.Request) {
-	// Connect to a server
+	// Connect to NATS
 	log.Println("Connecting to nats")
 	nc, err := nats.Connect("nats://nats:4222")
 	if err != nil {
@@ -124,7 +114,7 @@ func syncVMs(w http.ResponseWriter, r *http.Request) {
 	if err := nc.Publish("sync", []byte("Sync VMs")); err != nil {
 		log.Fatal(err)
 	}
-	log.Print("Syncing VMs")
+	log.Print("Triggered VM sync")
 }
 
 func main() {
@@ -145,7 +135,7 @@ func main() {
 
 	// Create the "vms" table if it doesn't exist
 	if _, err := db.Exec(
-		"CREATE TABLE IF NOT EXISTS vms (name CHAR (50) PRIMARY KEY, datacenter CHAR (50), secretkey VARCHAR (64), folder CHAR (50))"); err != nil {
+		"CREATE TABLE IF NOT EXISTS vms (name CHAR (50) PRIMARY KEY, datacenter CHAR (50), secretkey VARCHAR (64), role CHAR (50))"); err != nil {
 		log.Fatal(err)
 	}
 
@@ -155,5 +145,6 @@ func main() {
 	router.HandleFunc("/sync", syncVMs).Methods("GET")
 	router.HandleFunc("/vm/{name}", getVMRecord).Methods("GET")
 	router.HandleFunc("/vm/{name}", createVMRecord).Methods("POST")
-	log.Fatal(http.ListenAndServe(":8090", router))
+	log.Fatal(http.ListenAndServeTLS(":443", "cert.pem",
+		"key.pem", router))
 }

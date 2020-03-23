@@ -1,0 +1,111 @@
+{
+  "actions": {
+    "create": {
+      "emptyNameError": "Der Name darf nicht leer sein. Geben Sie einen Namen.",
+      "usedNameError": "Dieser Chassis existiert bereits. Geben Sie einen neuen Namen.",
+      "wizardPage1": "Name and server typ",
+      "wizardPage2": "Abmessungen und zustand",
+      "wizardPage3": "Bereit zum Abschließen"
+    },
+    "delete": {
+      "deleteTheChassis": "Löschen Sie den Chassis"
+    },
+    "edit": {
+    },
+    "whatCanTheStateBe": "Staat kann \"Bereithalten\"(Standard) oder \"Active\" sein",
+    "namePlaceholder": "Chassis XXX",
+    "serverTypePlaceholder": "DELL",
+    "dimensionsPlaceholder": "20in x 30in x 17in"
+  },
+  "header": {
+    "theChassisIsNowActive": "Das Chassis ist jetzt aktiv"
+  },
+  "list": {
+    "chassisList": "Chassis Liste",
+    "addChassis": "Chassis hinzufügen",
+    "addChassisWizard": "Chassis hinzufügen Wizard",
+    "noData": "keine Daten verfügbar",
+    "noObjectsSelected": "keine Objekte ausgewählt",
+    "multipleObjectsSelected": "Mehrere Objekte ausgewählt"
+  },
+  "main": {
+    "summary": "Zusammenfassung",
+    "monitor": "Monitor",
+    "configure": "Konfigurieren"
+  },
+  "settings": {
+    "theNumberOfDisplayedChassisPerPage": "Die Anzahl der angezeigten Chassis pro Seite",
+    "wasUpdatedInTheWebLocalStorage": "wurde im lokalen Web-Speicher aktualisiert",
+    "numberOfChassisPerPage": "Anzahl der Chassis pro Seite"
+  },
+  "shared": {
+    "modal": {
+      "createChassis": "Chassis erstellen",
+      "editChassis": "Chassis bearbeiten",
+      "deleteChassis": "Chassis löschen"
+    }
+  },
+  "tabs": {
+    "configure": {
+      "additional": {
+        "provideYourAdditionalSettingsHere": "Geben Sie hier Ihre zusätzlichen Einstellungen an"
+      },
+      "settings": {
+        "chassisSettings": "Chassis-Einstellungen"
+      },
+      "additionalSettings": "Zusätzliche Einstellungen"
+    },
+    "monitor": {
+      "chassisStatusInformation": "Chassis Statusinformationen"
+    },
+    "summary": {
+      "mainInformation": "Hauptinformation",
+      "additionalDetails": "Zusätzliche Details"
+    }
+  },
+  "welcome": {
+    "text": "Willkommen beim vSphere HTML SDK Plugin!",
+    "title": "Willkommen"
+  },
+  "common": {
+    "name": "Name",
+    "serverType": "Server Typ",
+    "dimensions": "Maße",
+    "state": "Bundesland",
+    "active": "Aktiv",
+    "standBy": "Bereithalten",
+    "cancel": "Stornieren",
+    "ok": "OK",
+    "yes":"Ja",
+    "no": "Nein",
+    "back": "Zurück",
+    "next": "Weiter",
+    "actions": "AKTIONEN",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "activate": "Aktivieren",
+    "update": "Aktualisieren",
+    "settings": "Einstellungen",
+    "general": "General",
+    "health": "Gesundheit",
+    "compliance": "Compliance1",
+    "refresh": "Aktualisieren",
+    "status": "Status",
+    "cpus": "CPUs"
+  },
+  "vsphere": {
+    "vcName": "Name des vCenter",
+    "vcGuid": "vCenter Server Guid",
+    "vcSelectMessage": "WÃ¤hlen Sie ein vCenter",
+    "vcenterSelector": "vCenter Selektor",
+    "memorySize": "Speichergröße (MB)",
+    "objects": {
+      "hosts": "Hosts"
+    },
+    "vm": {
+      "monitor": "VM  Monitoransicht",
+      "configure": "VM Konfigurierenansicht",
+      "portlet": "Vm Portlet hinzugefÃ¼gt von HTML Sample Plug-in"
+    }
+  }
+}

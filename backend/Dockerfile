@@ -4,6 +4,8 @@ COPY main.go .
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o /main .
 
 FROM scratch
+LABEL maintainer="Martez Reed <martez.reed@greenreedtech.com>"
 COPY --from=builder /main ./
-EXPOSE 8090
+COPY . ./
+EXPOSE 443
 CMD ["/main"]

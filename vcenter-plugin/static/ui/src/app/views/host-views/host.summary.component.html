@@ -1,0 +1,12 @@
+<clr-stack-view>
+   <clr-stack-block *ngIf="loading">
+      <span class="spinner spinner-inline"></span>
+      <span>Loading...</span>
+   </clr-stack-block>
+   <clr-stack-block *ngIf="!loading">
+      <clr-stack-label>Number Of Chassis</clr-stack-label>
+      <clr-stack-content (click)="navigateToHostMonitorView()">
+         <a>{{numberOfRelaterChassis}}</a>
+      </clr-stack-content>
+   </clr-stack-block>
+</clr-stack-view>

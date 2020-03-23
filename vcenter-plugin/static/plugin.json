@@ -1,0 +1,29 @@
+{
+    "manifestVersion": "1.0.0",
+    "requirements": {
+      "plugin.api.version": "1.0.0"
+    },
+    "configuration": {
+      "nameKey": "plugin.name",
+      "icon": {
+        "name": "main"
+      }
+    },
+    "definitions": {
+      "i18n": {
+        "locales": [
+          "en-US"
+        ],
+        "definitions": {
+          "plugin.name": {
+            "en-US": "Hello World"
+          }
+        }
+      }
+    },
+    "global": {
+      "view": {
+        "uri": "index.html"
+      }
+    }
+  }

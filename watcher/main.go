@@ -43,6 +43,9 @@ func main() {
 	finder := find.NewFinder(client.Client, true)
 
 	dc, err := finder.DatacenterOrDefault(ctx, datacenter)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	finder.SetDatacenter(dc)
 	refs := []types.ManagedObjectReference{dc.Reference()}
@@ -57,12 +60,14 @@ func main() {
 }
 
 func handleEvent(ref types.ManagedObjectReference, events []types.BaseEvent) (err error) {
-	// Connect to a server
+	// Connect to nats message bus
 	nc, err := nats.Connect("nats://nats:4222")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer nc.Close()
+
+	// Detect VM power on events and publish sync message
 	for _, event := range events {
 		eventType := reflect.TypeOf(event).String()
 		log.Printf("Event found of type %s\n", eventType)

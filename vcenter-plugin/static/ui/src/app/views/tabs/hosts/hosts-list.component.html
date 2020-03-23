@@ -1,0 +1,25 @@
+<!-- Copyright (c) 2018 VMware, Inc. All rights reserved. -->
+<clr-datagrid [clrDgLoading]="loading"
+              [(clrDgSelected)]="selectedHosts"
+              [clDgRowSelection]="!!preselectedHostsIds">
+   <clr-dg-placeholder>{{ 'list.noData' | translate }}</clr-dg-placeholder>
+
+   <clr-dg-column>{{ 'common.name' | translate }}</clr-dg-column>
+   <clr-dg-column>{{ 'common.state' | translate }}</clr-dg-column>
+   <clr-dg-column>{{ 'vsphere.memorySize' | translate }}</clr-dg-column>
+   <clr-dg-column>{{ 'common.cpus' | translate }}</clr-dg-column>
+   <clr-dg-column>{{ 'vsphere.vcName' | translate }}</clr-dg-column>
+
+   <clr-dg-row *clrDgItems="let host of connectedHosts" [clrDgItem]="host">
+
+      <clr-dg-cell>
+         <clr-icon shape="host"></clr-icon>
+         <a [routerLink]="" (click)="navigateToHostObject(host.id)"
+               (contextmenu)="onContextMenu()">{{host.name}}</a>
+      </clr-dg-cell>
+      <clr-dg-cell>{{host.state}}</clr-dg-cell>
+      <clr-dg-cell>{{host.memorySize}} (MB)</clr-dg-cell>
+      <clr-dg-cell>{{host.numCpus}}</clr-dg-cell>
+      <clr-dg-cell>{{host.vCenterName}}</clr-dg-cell>
+   </clr-dg-row>
+</clr-datagrid>

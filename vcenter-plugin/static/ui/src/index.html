@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<!-- Copyright (c) 2018 VMware, Inc. All rights reserved. -->
+<html>
+<head>
+   <title>vSphere HTML SDK Sample</title>
+   <meta charset="utf-8"/>
+   <base href="./">
+   <!-- Load MutationObserver polyfill and CSS vars polyfill to support IE11 -->
+   <script type="text/javascript" src="scripts/mutationobserver.min.js"></script>
+   <script type="text/javascript" src="scripts/css-vars-ponyfill.js"></script>
+   <script type="text/javascript">
+      //Initialize CSS vars polyfill
+      cssVars({
+         watch: true,
+         onlyVars: true
+      });
+   </script>
+   <link rel="stylesheet" type="text/css" id="theme-stylesheet-link">
+   <link rel="stylesheet" type="text/css" href="styles.bundle.css">
+   <script type="text/javascript" src="/api/ui/htmlClientSdk.js"></script>
+</head>
+<body>
+<app-root></app-root>
+</body>
+</html>

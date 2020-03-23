@@ -73,6 +73,9 @@ func syncVM() (vmnames []string) {
 	finder := find.NewFinder(client.Client, true)
 
 	vsphereDatacenter, err := finder.DatacenterOrDefault(ctx, datacenter)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	finder.SetDatacenter(vsphereDatacenter)
 
@@ -94,13 +97,13 @@ func syncVM() (vmnames []string) {
 				}
 			}
 			if len(vmconfig) < 1 {
-				log.Printf("%s is missing Vault config", vmdata.Name())
+				log.Printf("%s is missing identity data and will be synced", vmdata.Name())
 				vmnames = append(vmnames, vmdata.Name())
 			}
 		} else if props.Summary.Config.Template == true {
 			log.Printf("%s has been marked as a template and will be skipped", vmdata.Name())
 		} else if props.Summary.Runtime.PowerState == "poweredOff" {
-			log.Printf("Skipped %s due to a power state of %s", vmdata.Name(), props.Summary.Runtime.PowerState)
+			log.Printf("%s has a power state of %s and will be skipped", vmdata.Name(), props.Summary.Runtime.PowerState)
 		}
 	}
 	return vmnames

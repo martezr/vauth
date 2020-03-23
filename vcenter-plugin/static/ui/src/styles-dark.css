@@ -1,0 +1,6 @@
+:root {
+   --border-color: rgb(72, 87, 100);
+   --overlay-color: rgba(0, 0, 0, 0.2);
+   --info-icon-color: greenyellow;
+   --link-color: rgba(73, 175, 217, 1);
+}

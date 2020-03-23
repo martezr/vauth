@@ -1,0 +1,111 @@
+{
+  "actions": {
+    "create": {
+      "emptyNameError": "Le nom ne peut pas être vide. Entrez un nom.",
+      "usedNameError": "Ce Chassis existe déjà. Entrez un nouveau nom.",
+      "wizardPage1": "Nom et type de serveur",
+      "wizardPage2": "Dimensions et état",
+      "wizardPage3": "Prêt à terminer"
+    },
+    "delete": {
+      "deleteTheChassis": "Supprimer le Chassis"
+    },
+    "edit": {
+    },
+    "whatCanTheStateBe": "L'état peut être \"Prêt\"(défaut) ou \"Actif\"",
+    "namePlaceholder": "Chassis XXX",
+    "serverTypePlaceholder": "DELL",
+    "dimensionsPlaceholder": "20in x 30in x 17in"
+  },
+  "header": {
+    "theChassisIsNowActive": "Le Chassis est maintenant actif"
+  },
+  "list": {
+    "chassisList": "Liste des Chassis",
+    "addChassis": "Ajouter un Chassis",
+    "addChassisWizard": "Ajouter un Chassis Wizard",
+    "noData": "pas de données disponibles",
+    "noObjectsSelected": "Aucun objet sélectionné",
+    "multipleObjectsSelected": "Plusieurs objets sélectionnés"
+  },
+  "main": {
+    "summary": "Sommaire",
+    "monitor": "Surveiller",
+    "configure": "Configurer"
+  },
+  "settings": {
+    "theNumberOfDisplayedChassisPerPage": "Le nombre de châssis affichés par page",
+    "wasUpdatedInTheWebLocalStorage": "a été mis à jour dans le stockage local Web",
+    "numberOfChassisPerPage": "Nombre de Chassis par page"
+  },
+  "shared": {
+    "modal": {
+      "createChassis": "Créer un Chassis",
+      "editChassis": "Modifier le Chassis",
+      "deleteChassis": "Supprimer le Chassis"
+    }
+  },
+  "tabs": {
+    "configure": {
+      "additional": {
+        "provideYourAdditionalSettingsHere": "Fournissez vos paramètres supplémentaires ici"
+      },
+      "settings": {
+        "chassisSettings": "Paramètres du Chassis"
+      },
+      "additionalSettings": "Paramètres additionnels"
+    },
+    "monitor": {
+      "chassisStatusInformation": "Information de l'état du Chassis"
+    },
+    "summary": {
+      "mainInformation": "Informations principales",
+      "additionalDetails": "Détails supplémentaires"
+    }
+  },
+  "welcome": {
+    "text" : "Bienvenue dans vSphere HTML SDK Plugin!",
+    "title" : "Bienvenue"
+  },
+  "common": {
+    "name": "Nom",
+    "serverType": "Type de serveur",
+    "dimensions": "Dimensions",
+    "state": "Etat",
+    "active": "actif",
+    "standBy": "Prêt",
+    "cancel": "Annuler",
+    "ok": "OK",
+    "yes":"Oui",
+    "no": "Non",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "actions": "Actions",
+    "edit": "modifier",
+    "delete": "Effacer",
+    "activate": "Activer",
+    "update": "Mettre à jour",
+    "settings": "Paramètres",
+    "general": "Général",
+    "health": "Santé",
+    "compliance": "Conformité",
+    "refresh": "Rafraîchir",
+    "status": "Statut",
+    "cpus": "CPUs"
+  },
+  "vsphere": {
+    "vcName" : "Nom de vCenter",
+    "vcGuid": "vCenter Server Guid",
+    "vcSelectMessage": "Sélectionnez un vCenter",
+    "vcenterSelector": "vCenter Sélecteur",
+    "memorySize": "Taille de la mémoire (Mo)",
+    "objects": {
+      "hosts": "Hôtes"
+    },
+    "vm": {
+      "monitor": "VM Vue du Moniteur",
+      "configure": "VM Vue du Configurer",
+      "portlet": "Vm Portlet ajouté par HTML Sample Plug-in"
+    }
+  }
+}

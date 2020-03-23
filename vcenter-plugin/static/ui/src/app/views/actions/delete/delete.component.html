@@ -1,0 +1,10 @@
+<!-- Copyright (c) 2018 VMware, Inc. All rights reserved. -->
+<form (ngSubmit)="onSubmit()" class="modal-content-delete" #deleteChassisForm="ngForm">
+    <div class="modal-body content">
+        {{ 'actions.delete.deleteTheChassis' | translate }}?
+    </div>
+    <div class="modal-footer">
+        <button class="btn" type="button" (click)="onCancel()">{{ 'common.no' | translate }}</button>
+        <button class="btn btn-primary" type="submit">{{ 'common.yes' | translate }}</button>
+    </div>
+</form>

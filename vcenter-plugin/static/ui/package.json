@@ -32,7 +32,7 @@
     "copy-webpack-plugin": "4.3.1",
     "core-js": "2.4.1",
     "css-vars-ponyfill": "1.9.0",
-    "lodash": "4.17.4",
+    "lodash": "4.17.15",
     "mutationobserver-shim": "0.3.2",
     "rxjs": "5.4.3",
     "zone.js": "0.8.17"

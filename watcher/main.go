@@ -78,6 +78,13 @@ func handleEvent(ref types.ManagedObjectReference, events []types.BaseEvent) (er
 				log.Fatal(err)
 			}
 		}
+		if eventType == "*types.CustomFieldValueChangedEvent" {
+			vmName := event.GetEvent().Vm.Name
+			log.Printf("Detected custom attribute change event for %s", vmName)
+			if err := nc.Publish("updates", []byte(vmName)); err != nil {
+				log.Fatal(err)
+			}
+		}
 	}
 	return nil
 }

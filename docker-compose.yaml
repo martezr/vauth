@@ -1,11 +1,5 @@
 version: "3.7"
 services:
-#  ui:
-#    build: ./ui
-#    ports: 
-#      - "4200:4200"
-#    networks:
-#      - vauth-backend
   scheduler:
     build: ./scheduler
     depends_on:
@@ -20,10 +14,10 @@ services:
       - vauth-message
       - vauth-backend
     environment:
-    - VSPHERE_SERVER=grtvcenter01.grt.local
-    - VSPHERE_USERNAME=vauth@vsphere.local
-    - VSPHERE_PASSWORD=Hashicorp1#
-    - VSPHERE_DATACENTER=GRT
+    - VSPHERE_SERVER=${VSPHERE_SERVER}
+    - VSPHERE_USERNAME=${VSPHERE_USERNAME}
+    - VSPHERE_PASSWORD=${VSPHERE_PASSWORD}
+    - VSPHERE_DATACENTER=${VSPHERE_DATACENTER}
   syncer:
     build: ./syncer
     depends_on:
@@ -32,10 +26,10 @@ services:
     networks:
       - vauth-message
     environment:
-    - VSPHERE_SERVER=grtvcenter01.grt.local
-    - VSPHERE_USERNAME=vauth@vsphere.local
-    - VSPHERE_PASSWORD=Hashicorp1#
-    - VSPHERE_DATACENTER=GRT
+    - VSPHERE_SERVER=${VSPHERE_SERVER}
+    - VSPHERE_USERNAME=${VSPHERE_USERNAME}
+    - VSPHERE_PASSWORD=${VSPHERE_PASSWORD}
+    - VSPHERE_DATACENTER=${VSPHERE_DATACENTER}
   watcher:
     build: ./watcher
     depends_on:
@@ -44,10 +38,10 @@ services:
     networks:
       - vauth-message
     environment:
-    - VSPHERE_SERVER=grtvcenter01.grt.local
-    - VSPHERE_USERNAME=vauth@vsphere.local
-    - VSPHERE_PASSWORD=Hashicorp1#
-    - VSPHERE_DATACENTER=GRT
+    - VSPHERE_SERVER=${VSPHERE_SERVER}
+    - VSPHERE_USERNAME=${VSPHERE_USERNAME}
+    - VSPHERE_PASSWORD=${VSPHERE_PASSWORD}
+    - VSPHERE_DATACENTER=${VSPHERE_DATACENTER}
   nats:
     image: nats:latest
     ports: 

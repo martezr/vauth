@@ -13,7 +13,7 @@ metadata:
 spec:
   containers:
   - name: vauth-scheduler
-    image: vauth-scheduler
+    image: martezr/vauth-scheduler
 ---
 apiVersion: v1
 kind: Pod
@@ -25,7 +25,7 @@ metadata:
 spec:
   containers:
   - name: vauth-worker
-    image: vauth-worker
+    image: martezr/vauth-worker
 ---
 apiVersion: v1
 kind: Pod
@@ -37,7 +37,7 @@ metadata:
 spec:
   containers:
   - name: vauth-syncer
-    image: vauth-syncer
+    image: martezr/vauth-syncer
 ---
 apiVersion: v1
 kind: Pod
@@ -49,4 +49,16 @@ metadata:
 spec:
   containers:
   - name: vauth-watcher
-    image: vauth-watcher
+    image: martezr/vauth-watcher
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: vauth-backend
+  namespace: vauth
+  labels:
+    name: vauth-backend
+spec:
+  containers:
+  - name: vauth-backend
+    image: martezr/vauth-backend

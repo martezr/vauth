@@ -124,7 +124,7 @@ func syncVMs(w http.ResponseWriter, r *http.Request) {
 func main() {
 	// Connect to the database
 	log.Printf("Connecting to the database at %s", dbhost)
-	log.Panicln(dbstring)
+	log.Println(dbstring)
 	address, err := net.LookupHost(dbhost)
 	if err != nil {
 		log.Fatal(err)

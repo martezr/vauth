@@ -1,4 +1,4 @@
-name: ci
+name: worker
 
 on:
   push:
@@ -22,7 +22,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
-          context: scheduler
-          file: scheduler/Dockerfile
+          context: worker
+          file: worker/Dockerfile
           push: true
-          tags: martezr/vauth-scheduler:latest
+          tags: martezr/vauth-worker:latest

@@ -7,6 +7,7 @@ import (
 	nats "github.com/nats-io/nats.go"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
@@ -21,6 +22,9 @@ type VM struct {
 
 var vms []VM
 
+var dbhost = os.Getenv("DB_HOST")
+var dbstring = fmt.Sprintf("postgresql://root@%s:26257/vauth?sslmode=disable", dbhost)
+
 func homeLink(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "vAuth 0.0.1")
 }
@@ -33,7 +37,7 @@ func createVMRecord(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(vm)
 	// Connect to the database
 	log.Print("Connecting to the database")
-	db, err := sql.Open("postgres", "postgresql://root@db:26257/vauth?sslmode=disable")
+	db, err := sql.Open("postgres", dbstring)
 	if err != nil {
 		log.Fatal("error connecting to the database: ", err)
 	}
@@ -54,7 +58,7 @@ func getVMRecord(w http.ResponseWriter, r *http.Request) {
 
 	// Connect to the database
 	log.Print("Connecting to the database")
-	db, err := sql.Open("postgres", "postgresql://root@db:26257/vauth?sslmode=disable")
+	db, err := sql.Open("postgres", dbstring)
 	if err != nil {
 		log.Fatal("error connecting to the database: ", err)
 	}
@@ -79,7 +83,7 @@ func getVMRecord(w http.ResponseWriter, r *http.Request) {
 func getAllVMs(w http.ResponseWriter, r *http.Request) {
 	// Connect to the database
 	log.Print("Connecting to the database")
-	db, err := sql.Open("postgres", "postgresql://root@db:26257/vauth?sslmode=disable")
+	db, err := sql.Open("postgres", dbstring)
 	if err != nil {
 		log.Fatal("error connecting to the database: ", err)
 	}
@@ -120,7 +124,7 @@ func syncVMs(w http.ResponseWriter, r *http.Request) {
 func main() {
 	// Connect to the database
 	log.Print("Connecting to the database")
-	db, err := sql.Open("postgres", "postgresql://root@db:26257/vauth?sslmode=disable")
+	db, err := sql.Open("postgres", dbstring)
 	if err != nil {
 		log.Fatal("error connecting to the database: ", err)
 	}

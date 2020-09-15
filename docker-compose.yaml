@@ -53,13 +53,13 @@ services:
     ports:
     - "443:443"
     depends_on:
-      - db
+      - cockroachdb
       - nats
     networks:
       - vauth-backend
       - vauth-message
       - vauth-database
-  db:
+  cockroachdb:
     image: cockroachdb/cockroach:v19.1.5
     ports:
      - "8080:8080"

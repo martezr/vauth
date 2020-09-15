@@ -6,12 +6,47 @@ metadata:
 apiVersion: v1
 kind: Pod
 metadata:
-  name: nginx
+  name: vauth-scheduler
+  namespace: vauth
   labels:
-    name: nginx
+    name: vauth-scheduler
 spec:
   containers:
-  - name: nginx
-    image: nginx
-    ports:
-    - containerPort: 80
+  - name: vauth-scheduler
+    image: vauth-scheduler
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: vauth-worker
+  namespace: vauth
+  labels:
+    name: vauth-worker
+spec:
+  containers:
+  - name: vauth-worker
+    image: vauth-worker
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: vauth-syncer
+  namespace: vauth
+  labels:
+    name: vauth-syncer
+spec:
+  containers:
+  - name: vauth-syncer
+    image: vauth-syncer
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: vauth-watcher
+  namespace: vauth
+  labels:
+    name: vauth-watcher
+spec:
+  containers:
+  - name: vauth-watcher
+    image: vauth-watcher

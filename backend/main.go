@@ -4,13 +4,13 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	nats "github.com/nats-io/nats.go"
-	"log"
-	"net/http"
-	"os"
-
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
+	nats "github.com/nats-io/nats.go"
+	"log"
+	"net"
+	"net/http"
+	"os"
 )
 
 type VM struct {
@@ -123,7 +123,13 @@ func syncVMs(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	// Connect to the database
-	log.Print("Connecting to the database")
+	log.Printf("Connecting to the database at %s", dbhost)
+	log.Panicln(dbstring)
+	address, err := net.LookupHost(dbhost)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(address)
 	db, err := sql.Open("postgres", dbstring)
 	if err != nil {
 		log.Fatal("error connecting to the database: ", err)

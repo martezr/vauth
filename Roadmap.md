@@ -11,4 +11,3 @@
 * Add support for multiple vCenter datacenters and vCenters
 * Add support for an exclusion or inclusion list based upon folders, VM names (Regex - possibly) and VM properties
 * Encrypt the secret key in the database
-

@@ -1,5 +1,13 @@
 version: "3.7"
 services:
+  ui:
+    build: ./ui
+    networks:
+      - vauth-backend    
+    depends_on:
+      - backend
+    ports:
+      - 4200:4200
   scheduler:
     build: ./scheduler
     depends_on:
@@ -59,24 +67,38 @@ services:
       - vauth-backend
       - vauth-message
       - vauth-database
+    volumes:
+      - ${PWD}/backend:/ssl/certs
+    secrets:
+      - ca.crt
   db:
     image: cockroachdb/cockroach:v19.1.5
+    hostname: db
+    container_name: db
     ports:
      - "8080:8080"
     networks:
       - vauth-database
-    command: ["start","--insecure"]
+    command: ["start","--certs-dir=/run/secrets","--listen-addr=db","--advertise-addr=db"]
     secrets:
-      - db_cert
-      - db_key
+      - ca.key
+      - ca.crt
+      - node.crt
+      - node.key
     volumes:
       - database-volume:/cockroach/cockroach-data
 
 secrets:
-   db_cert:
-     file: ./backend/cert.pem
+   ca.key:
+     file: database/ca.key
+   ca.crt:
+     file: database/ca.crt
+   node.crt:
+     file: database/node.crt
+   node.key:
+     file: database/node.key
    db_key:
-     file: ./backend/key.pem
+     file: backend/key.pem
 
 networks:
   vauth-backend:

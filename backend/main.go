@@ -3,7 +3,6 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	nats "github.com/nats-io/nats.go"
 	"log"
 	"net/http"
@@ -19,11 +18,13 @@ type VM struct {
 	Secretkey  string `json:"Secretkey"`
 }
 
-var vms []VM
-
-func homeLink(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "vAuth 0.0.1")
+var VMS structs {
+	VMS      []VM `json:"VMs"`
 }
+
+//func createVMExclusion(w http.ResponseWriter, r *http.Request) {}
+
+//func deleteVMExclusion(w http.ResponseWriter, r *http.Request) {}
 
 func createVMRecord(w http.ResponseWriter, r *http.Request) {
 	VMName := mux.Vars(r)["name"]
@@ -33,7 +34,7 @@ func createVMRecord(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(vm)
 	// Connect to the database
 	log.Print("Connecting to the database")
-	db, err := sql.Open("postgres", "postgresql://root@db:26257/vauth?sslmode=disable")
+	db, err := sql.Open("postgres", "postgresql://root@db:26257/vauth?ssl=true&sslmode=require&sslrootcert=/run/secrets/ca.crt&sslkey=/ssl/certs/client.root.key&sslcert=/ssl/certs/client.root.crt")
 	if err != nil {
 		log.Fatal("error connecting to the database: ", err)
 	}
@@ -54,7 +55,7 @@ func getVMRecord(w http.ResponseWriter, r *http.Request) {
 
 	// Connect to the database
 	log.Print("Connecting to the database")
-	db, err := sql.Open("postgres", "postgresql://root@db:26257/vauth?sslmode=disable")
+	db, err := sql.Open("postgres", "postgresql://root@db:26257/vauth?ssl=true&sslmode=require&sslrootcert=/run/secrets/ca.crt&sslkey=/ssl/certs/client.root.key&sslcert=/ssl/certs/client.root.crt")
 	if err != nil {
 		log.Fatal("error connecting to the database: ", err)
 	}
@@ -79,7 +80,7 @@ func getVMRecord(w http.ResponseWriter, r *http.Request) {
 func getAllVMs(w http.ResponseWriter, r *http.Request) {
 	// Connect to the database
 	log.Print("Connecting to the database")
-	db, err := sql.Open("postgres", "postgresql://root@db:26257/vauth?sslmode=disable")
+	db, err := sql.Open("postgres", "postgresql://root@db:26257/vauth?ssl=true&sslmode=require&sslrootcert=/run/secrets/ca.crt&sslkey=/ssl/certs/client.root.key&sslcert=/ssl/certs/client.root.crt")
 	if err != nil {
 		log.Fatal("error connecting to the database: ", err)
 	}
@@ -120,7 +121,7 @@ func syncVMs(w http.ResponseWriter, r *http.Request) {
 func main() {
 	// Connect to the database
 	log.Print("Connecting to the database")
-	db, err := sql.Open("postgres", "postgresql://root@db:26257/vauth?sslmode=disable")
+	db, err := sql.Open("postgres", "postgresql://root@db:26257/vauth?ssl=true&sslmode=require&sslrootcert=/run/secrets/ca.crt&sslkey=/ssl/certs/client.root.key&sslcert=/ssl/certs/client.root.crt")
 	if err != nil {
 		log.Fatal("error connecting to the database: ", err)
 	}
@@ -140,7 +141,6 @@ func main() {
 	}
 
 	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/", homeLink)
 	router.HandleFunc("/vms", getAllVMs).Methods("GET")
 	router.HandleFunc("/sync", syncVMs).Methods("GET")
 	router.HandleFunc("/vm/{name}", getVMRecord).Methods("GET")

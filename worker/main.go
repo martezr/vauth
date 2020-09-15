@@ -36,14 +36,14 @@ type extraConfig []types.BaseOptionValue
 
 func main() {
 	time.Sleep(10 * time.Second)
-	// Connect to a server
-	log.Println("Connecting to nats")
+	// Connect NATS data bus
+	log.Println("Connecting to NATS")
 	nc, err := nats.Connect("nats://nats:4222")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer nc.Close()
-	log.Println("Connected to nats")
+	log.Println("Successfully connected to NATS")
 
 	// Use a WaitGroup to wait for a message to arrive
 	wg := sync.WaitGroup{}
@@ -87,6 +87,7 @@ func updateVM(name string) {
 	log.Printf("Connected to vCenter: %s", vsphereServer)
 	finder := find.NewFinder(client.Client, true)
 
+	// Fetch the identified vCenter Datacenter or the default
 	vsphereDatacenter, err := finder.DatacenterOrDefault(ctx, datacenter)
 	if err != nil {
 		fmt.Println(err)
@@ -94,6 +95,7 @@ func updateVM(name string) {
 
 	finder.SetDatacenter(vsphereDatacenter)
 
+	// Fetch all the virtual machines in the datacenter
 	machines, err := finder.VirtualMachineList(ctx, name)
 	if err != nil {
 		fmt.Println(err)
@@ -108,6 +110,7 @@ func updateVM(name string) {
 		machine := machines[0]
 		var props mo.VirtualMachine
 		machine.Properties(ctx, vmdata.Reference(), nil, &props)
+		// Ensure that the virtual machine is not a VM template and it is in a powered on state
 		if props.Summary.Config.Template == false && props.Summary.Runtime.PowerState == "poweredOn" {
 			customAttrs := make(map[string]interface{})
 			role := "default"
@@ -142,7 +145,7 @@ func updateVM(name string) {
 			vmdata.Reconfigure(ctx, authSpec)
 			log.Printf("Updated VM: %s", name)
 
-			// Post JSON payload
+			// Post JSON payload to the backend service
 			payload, err := json.Marshal(vm{Name: name, Role: role, Datacenter: datacenter, Secretkey: token})
 			if err != nil {
 				log.Fatalln(err)

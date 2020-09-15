@@ -34,7 +34,7 @@ func main() {
 	vcenterURL.User = credentials
 
 	// Connecting to vCenter
-	log.Print("Connecting to vCenter")
+	log.Printf("Connecting to vCenter as %s", vsphereUsername)
 	client, err := govmomi.NewClient(ctx, vcenterURL, true)
 	if err != nil {
 		log.Println(err)

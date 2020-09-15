@@ -18,54 +18,53 @@
         </div>
     </header>
     <div class="content-container">
-        <div class="content-area">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Decimal</th>
-                        <th>Hexadecimal</th>
-                        <th>Binary</th>
-                        <th>Roman Numeral</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>1</td>
-                        <td>1</td>
-                        <td>I</td>
-                    </tr>
-                    <tr>
-                        <td>5</td>
-                        <td>5</td>
-                        <td>101</td>
-                        <td>V</td>
-                    </tr>
-                    <tr>
-                        <td>10</td>
-                        <td>A</td>
-                        <td>1010</td>
-                        <td>X</td>
-                    </tr>
-                    <tr>
-                        <td>15</td>
-                        <td>F</td>
-                        <td>1111</td>
-                        <td>XV</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
         <nav class="sidenav">
-            <section class="nav-group collapsible">
-                <input id="tabexample1" type="checkbox">
-                <label for="tabexample1">Administration</label>
-                <ul class="nav-list">
-                    <li><a class="nav-link">Exclusions</a></li>
-                    <li><a class="nav-link">Configuration</a></li>
-                </ul>
+            <section class="sidenav-content">
+                <a href="..." class="nav-link active">
+                    Nav Element 1
+                </a>
+                <a href="..." class="nav-link">
+                    Nav Element 2
+                </a>
+                <section class="nav-group collapsible">
+                    <input id="tabexample1" type="checkbox">
+                    <label for="tabexample1">Collapsible Nav Element</label>
+                    <ul class="nav-list">
+                        <li><a class="nav-link">Link 1</a></li>
+                        <li><a class="nav-link">Link 2</a></li>
+                    </ul>
+                </section>
+                <section class="nav-group">
+                    <input id="tabexample2" type="checkbox">
+                    <label for="tabexample2">Default Nav Element</label>
+                    <ul class="nav-list">
+                        <li><a class="nav-link">Link 1</a></li>
+                        <li><a class="nav-link">Link 2</a></li>
+                        <li><a class="nav-link active">Link 3</a></li>
+                        <li><a class="nav-link">Link 4</a></li>
+                        <li><a class="nav-link">Link 5</a></li>
+                        <li><a class="nav-link">Link 6</a></li>
+                    </ul>
+                </section>
             </section>
         </nav>
+        <div class="content-area">
+            <clr-datagrid>
+                <clr-dg-column>User ID</clr-dg-column>
+                <clr-dg-column>Name</clr-dg-column>
+                <clr-dg-column>Creation date</clr-dg-column>
+                <clr-dg-column>Favorite color</clr-dg-column>
+            
+                <clr-dg-row *ngFor="let user of users">
+                    <clr-dg-cell>{{user.id}}</clr-dg-cell>
+                    <clr-dg-cell>{{user.name}}</clr-dg-cell>
+                    <clr-dg-cell>{{user.creation | date}}</clr-dg-cell>
+                    <clr-dg-cell>{{user.color}}</clr-dg-cell>
+                </clr-dg-row>
+            
+                <clr-dg-footer>{{users.length}} users</clr-dg-footer>
+            </clr-datagrid>
+        </div>
     </div>
   </div>
 

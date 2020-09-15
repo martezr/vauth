@@ -8,7 +8,7 @@ import (
 
 func main() {
 	s := gocron.NewScheduler()
-	s.Every(60).Minutes().Do(sync)
+	s.Every(1).Minute().Do(sync)
 	<-s.Start()
 }
 

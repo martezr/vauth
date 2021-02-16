@@ -1,0 +1,17 @@
+version: 1.0
+provider:
+  name: openfaas
+  gateway: https://grtveba01.grt.local
+functions:
+  vebavauth:
+    lang: golang-http
+    handler: ./handler
+    image: public.ecr.aws/i4r5n0t9/vebavauth:latest
+    environment:
+      write_debug: true
+      read_debug: true
+      function_debug: false
+    secrets:
+      - vebaconfig
+    annotations:
+      topic: VmPoweredOnEvent, CustomFieldValueChangedEvent

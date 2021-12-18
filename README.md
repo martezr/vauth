@@ -1,17 +1,15 @@
-# vauth
+# vAuth
 
-[![Build Status](https://img.shields.io/travis/martezr/packer-provisioner-puppet-bolt/master.svg)][travis]
 [![GoReportCard][report-badge]][report]
 [![GitHub release](https://img.shields.io/github/release/martezr/vauth.svg)](https://github.com/martezr/vauth/releases/)
 [![license](https://img.shields.io/github/license/martezr/vauth.svg)](https://github.com/martezr/vauth/blob/master/LICENSE)
 
-[travis]: https://travis-ci.org/martezr/vauth
 [report-badge]: https://goreportcard.com/badge/github.com/martezr/vauth
 [report]: https://goreportcard.com/report/github.com/martezr/vauth
 
 VMware vSphere VM Identity Platform
 
-The vAuth Identity platform works in conjunction with the [vSphere Vault Auth Plugin](https://github.com/martezr/vault-plugin-auth-vsphere). The vAuth platform provides identity information to virtual machines similiar to the metadata provided by public cloud providers. The platform is built to work with [HashiCorp Vault](https://www.vaultproject.io/) to enable VMware vSphere to be used as a trusted platform similar to public cloud providers such as AWS and Azure.
+The vAuth platform provides identity information to virtual machines similiar to the metadata provided by public cloud providers. The platform is built to work with [HashiCorp Vault](https://www.vaultproject.io/) to enable VMware vSphere to be used as a trusted platform similar to public cloud providers such as AWS and Azure.
 
 ## HashiCorp Vault Minimum Permissions
 

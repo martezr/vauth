@@ -1,9 +1,0 @@
-[vcenter]
-server = "VCENTER"
-user = "administrator@vsphere.local"
-password = "password"
-insecure = true
-
-[vault]
-server = "http://VAULTSERVER:8200"
-token = "vaultpassword"

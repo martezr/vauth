@@ -13,33 +13,34 @@ VMware vSphere VM Identity Platform
 
 The vAuth Identity platform works in conjunction with the [vSphere Vault Auth Plugin](https://github.com/martezr/vault-plugin-auth-vsphere). The vAuth platform provides identity information to virtual machines similiar to the metadata provided by public cloud providers. The platform is built to work with [HashiCorp Vault](https://www.vaultproject.io/) to enable VMware vSphere to be used as a trusted platform similar to public cloud providers such as AWS and Azure.
 
-# vAuth Architecture
+## HashiCorp Vault Minimum Permissions
 
-The vAuth platform is composed of multiple containers that leverage cloud-native practices with high availability and resillency in mind. The diagram below displays how the different services interact with one another.
+The vAuth platform requires the following minimum permissions.
 
-![](./vauth-architecture.png)
+* List all authentication methods
+* Read and list all roles in the approle backend
 
-|Component|Description|
-|---------|-----------|
-| Scheduler| Schedules the synchronization process to ensure that all virtual machines have identity data in the event a real-time event was missed |
-| Syncer   | Synchronize virtual machines without identity data |
-| Watcher | Watches for relevant VMware vSphere events such as power on operations and custom attribute changes |
-| Worker | Generate the identity data (VM Name, Datacenter, Role and Secret Key) and add that to the virtual machines attributes|
-| Backend | REST API for Vault authentication validation and database interaction |
-| NATS | Event bus for system transactions |
-| DB | Cockroachdb for persistent virtual machine identity data presented by the backend in response to Vault auth validation requests |
+```
+# List auth methods
+path "sys/auth" {
+  capabilities = ["read"]
+}
 
-## Libraries
+# List roles
+path "auth/approle/*" {
+  capabilities = [ "read", "list" ]
+}
 
-The following third party libraries have been used to build the vAuth platform.
+# Read the role IDs for all roles in the approle auth backend
+path "auth/approle/role/+/role-id" {
+   capabilities = [ "read" ]
+}
 
-|Name|Description|
-|----|-----------|
-|govmomi| VMware vSphere Golang SDK |
-|nats-io| NATS pub/sub platform Golang SDK|
-|jasonlvhit/gocron||
-|mux| HTTTP router |
-|pq| Golang Postgres driver for SQL database interaction|
+# Generate secret IDs for all roles in the approle auth backend
+path "auth/approle/role/+/secret-id" {
+  capabilities = [ "update" ]  
+}
+```
 
 ## vSphere Account Permissions
 
@@ -52,15 +53,6 @@ The following operations require a privilege to be assigned to the vSphere accou
 |----|-----------|
 |Virtual Machine > Change Configuration > Advanced Configuration | The account needs to have permission to update the advanced configuration of virtual machines to provide the identity data to the guest operating system|
 
-**Non-privileged interaction**
-
-The watcher service connects to the vSphere event manager to "watch" for power on events in order to ensure that virtual machines receive identity data when they are powered on.
-
-The watcher service also watches for changes to virtual machine custom attributes which are used for assigning the role to virtual machines.
-
 ## Setup
 
 
-```
-docker-compose up -d
-```

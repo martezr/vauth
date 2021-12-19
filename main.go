@@ -112,7 +112,7 @@ func main() {
 	finder.SetDatacenter(dc)
 	refs := []types.ManagedObjectReference{dc.Reference()}
 
-	db = database.StartDB(config.DatDir)
+	db = database.StartDB(config.DataDir)
 
 	database.ListDBRecords(db)
 	// Setting up the event manager

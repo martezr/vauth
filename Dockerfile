@@ -12,13 +12,13 @@ COPY . .
 
 RUN go build -o vauth
 
-
-FROM scratch
-
-WORKDIR /
-
-COPY --from=build /app/vauth /vauth
-
+# STAGE 2: build the container to run
+FROM gcr.io/distroless/static AS final
+ 
 USER nonroot:nonroot
-
-CMD [ "/vauth" ]
+ 
+# copy compiled app
+COPY --from=build --chown=nonroot:nonroot /app/vauth /vauth
+ 
+# run binary; use vector form
+ENTRYPOINT ["/vauth"]

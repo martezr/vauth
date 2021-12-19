@@ -10,8 +10,6 @@ RUN go mod download
 
 COPY . .
 
-RUN ls -al
-
 RUN go build -o vauth
 
 

@@ -1,4 +1,4 @@
-module github.com/martezr/vsphere-vauth
+module github.com/martezr/vauth
 
 go 1.16
 

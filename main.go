@@ -2,9 +2,7 @@ package main
 
 import (
 	"context"
-	"embed"
 	"fmt"
-	"io/fs"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -17,9 +15,9 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/martezr/vsphere-vauth/approle"
-	"github.com/martezr/vsphere-vauth/database"
-	"github.com/martezr/vsphere-vauth/utils"
+	"github.com/martezr/vauth/approle"
+	"github.com/martezr/vauth/database"
+	"github.com/martezr/vauth/utils"
 
 	"github.com/hashicorp/hcl/v2/hclsimple"
 	"github.com/vmware/govmomi"
@@ -44,14 +42,14 @@ var (
 var config utils.Config
 var vsphereClient *govmomi.Client
 
-//go:embed frontend/dist/*
-var webUI embed.FS
+////go:embed frontend/dist/*
+//var webUI embed.FS
 
-func clientHandler() http.Handler {
-	fsys := fs.FS(webUI)
-	contentStatic, _ := fs.Sub(fsys, "frontend/dist")
-	return http.FileServer(http.FS(contentStatic))
-}
+//func clientHandler() http.Handler {
+//	fsys := fs.FS(webUI)
+//	contentStatic, _ := fs.Sub(fsys, "frontend/dist")
+//	return http.FileServer(http.FS(contentStatic))
+//}
 
 func main() {
 	hclErr := hclsimple.DecodeFile("config.hcl", nil, &config)
@@ -102,7 +100,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	http.Handle("/", clientHandler())
+	//	http.Handle("/", clientHandler())
 
 	// Start the server.
 	log.Println("UI listening on port", config.UIPort)

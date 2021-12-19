@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/hashicorp/vault/api"
-	"github.com/martezr/vsphere-vauth/utils"
+	"github.com/martezr/vauth/utils"
 )
 
 type Metadata struct {

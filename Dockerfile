@@ -4,22 +4,22 @@ FROM golang:1.16-alpine AS build
 
 WORKDIR /app
 
-COPY go.mod ./
-COPY go.sum ./
+COPY go.mod .
+COPY go.sum .
 RUN go mod download
 
-COPY *.go ./
+COPY . .
 
-COPY frontend ./
+RUN ls -al
 
-RUN go build -o /vauth
+RUN go build -o vauth
 
 
 FROM scratch
 
 WORKDIR /
 
-COPY --from=build /vauth /vauth
+COPY --from=build /app/vauth /vauth
 
 USER nonroot:nonroot
 

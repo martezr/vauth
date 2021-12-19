@@ -10,17 +10,17 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -o vauth
+RUN CGO_ENABLED=0 go build -o /vauth
 
 # STAGE 2: build the container to run
 FROM gcr.io/distroless/static AS final
  
 USER nonroot:nonroot
 
-WORKDIR /app
+WORKDIR /
 
 # copy compiled app
-COPY --from=build --chown=nonroot:nonroot /app/vauth /vauth
- 
+COPY --from=build --chown=nonroot:nonroot /vauth /
+
 # run binary; use vector form
 CMD ["/vauth"]

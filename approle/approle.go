@@ -22,7 +22,7 @@ var httpClient = &http.Client{
 }
 
 func FetchAppRole(config utils.Config, vaultAddr string, token string, rolename string, vmname string) (status string, roleid string, secretid string, secretidttl string) {
-	if config.Vault[0].TLSSkipVerify {
+	if config.TLSSkipVerify {
 		tr := &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		}
@@ -44,26 +44,26 @@ func FetchAppRole(config utils.Config, vaultAddr string, token string, rolename 
 	pathExists := false
 	for k := range authMethods {
 		path := strings.Replace(k, "/", "", -1)
-		if path == config.Vault[0].VaultAppRoleMount {
-			log.Printf("Found %s mount point", config.Vault[0].VaultAppRoleMount)
+		if path == config.VaultAppRoleMount {
+			log.Printf("Found %s mount point", config.VaultAppRoleMount)
 			pathExists = true
 		}
 	}
 
 	if !pathExists {
-		log.Printf("Unable to find %s mount point", config.Vault[0].VaultAppRoleMount)
+		log.Printf("Unable to find %s mount point", config.VaultAppRoleMount)
 		return "role not found", "", "", ""
 	}
 
 	// Evaluate if the role associated with the VM exists
-	path := fmt.Sprintf("auth/%s/role", config.Vault[0].VaultAppRoleMount)
+	path := fmt.Sprintf("auth/%s/role", config.VaultAppRoleMount)
 	roles, roleerr := client.Logical().List(path)
 	if roleerr != nil {
 		panic(roleerr)
 	}
 
 	if roles == nil {
-		log.Printf("%s contains no roles", config.Vault[0].VaultAppRoleMount)
+		log.Printf("%s contains no roles", config.VaultAppRoleMount)
 		return "role not found", "", "", ""
 	}
 
@@ -77,7 +77,7 @@ func FetchAppRole(config utils.Config, vaultAddr string, token string, rolename 
 
 	// Fetch role ID from Vault
 	if utils.Contains(outroles, rolename) {
-		rolepath := fmt.Sprintf("auth/%s/role/%s/role-id", config.Vault[0].VaultAppRoleMount, rolename)
+		rolepath := fmt.Sprintf("auth/%s/role/%s/role-id", config.VaultAppRoleMount, rolename)
 		data, err := client.Logical().Read(rolepath)
 		if err != nil {
 			panic(err)
@@ -89,9 +89,9 @@ func FetchAppRole(config utils.Config, vaultAddr string, token string, rolename 
 		options := map[string]interface{}{
 			"metadata": string(metadataJSON),
 		}
-		secretpath := fmt.Sprintf("auth/%s/role/%s/secret-id", config.Vault[0].VaultAppRoleMount, rolename)
+		secretpath := fmt.Sprintf("auth/%s/role/%s/secret-id", config.VaultAppRoleMount, rolename)
 
-		if config.Vault[0].WrapResponse {
+		if config.WrapResponse {
 			client.SetWrappingLookupFunc(func(operation, path string) string {
 				return "5m"
 			})
@@ -102,7 +102,7 @@ func FetchAppRole(config utils.Config, vaultAddr string, token string, rolename 
 			panic(newerr)
 		}
 
-		if config.Vault[0].WrapResponse {
+		if config.WrapResponse {
 			if secretdata == nil {
 				log.Fatal("nil secret")
 			}

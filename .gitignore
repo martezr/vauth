@@ -1,1 +1,3 @@
 frontend/node_modules/*
+vauth
+vauth.db

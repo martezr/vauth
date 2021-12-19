@@ -1,23 +1,13 @@
 package utils
 
 type Config struct {
-	UIPort  string          `hcl:"ui_port"`
-	Vsphere []VsphereConfig `hcl:"vsphere,block"`
-	Vault   []VaultConfig   `hcl:"vault,block"`
-}
-
-type VsphereConfig struct {
-	Name            string `hcl:"name,label"`
-	VsphereURL      string `hcl:"vsphere_url"`
-	VsphereUsername string `hcl:"vsphere_username"`
-	VspherePassword string `hcl:"vsphere_password"`
-}
-
-type VaultConfig struct {
-	Name              string `hcl:"name,label"`
-	VaultAddress      string `hcl:"vault_address"`
-	VaultToken        string `hcl:"vault_token"`
-	VaultAppRoleMount string `hcl:"vault_approle_mount"`
-	TLSSkipVerify     bool   `hcl:"tls_skip_verify,optional"`
-	WrapResponse      bool   `hcl:"wrap_response,optional"`
+	UIPort            string `yaml:"ui_port" mapstructure:"UI_PORT"`
+	VsphereURL        string `yaml:"vsphere_url" mapstructure:"VSPHERE_URL"`
+	VsphereUsername   string `yaml:"vsphere_username" mapstructure:"VSPHERE_USERNAME"`
+	VspherePassword   string `yaml:"vsphere_password" mapstructure:"VSPHERE_PASSWORD"`
+	VaultAddress      string `yaml:"vault_address" mapstructure:"VAULT_ADDRESS"`
+	VaultToken        string `yaml:"vault_token" mapstructure:"VAULT_TOKEN"`
+	VaultAppRoleMount string `yaml:"vault_approle_mount" mapstructure:"VAULT_APPROLE_MOUNT"`
+	TLSSkipVerify     bool   `yaml:"tls_skip_verify,optional" mapstructure:"TLS_SKIP_VERIFY"`
+	WrapResponse      bool   `yaml:"wrap_response,optional" mapstructure:"WRAP_RESPONSE"`
 }

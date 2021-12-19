@@ -18,8 +18,8 @@ import (
 	"github.com/martezr/vauth/approle"
 	"github.com/martezr/vauth/database"
 	"github.com/martezr/vauth/utils"
+	"github.com/spf13/viper"
 
-	"github.com/hashicorp/hcl/v2/hclsimple"
 	"github.com/vmware/govmomi"
 	"github.com/vmware/govmomi/event"
 	"github.com/vmware/govmomi/find"
@@ -52,24 +52,46 @@ var vsphereClient *govmomi.Client
 //}
 
 func main() {
-	hclErr := hclsimple.DecodeFile("config.hcl", nil, &config)
-	if hclErr != nil {
-		log.Fatalf("Failed to load configuration: %s", hclErr)
+
+	cfg := viper.New()
+	cfg.AddConfigPath(".")
+	cfg.SetConfigName("config")
+	cfg.SetConfigType("yaml")
+
+	cfg.AutomaticEnv()
+
+	if err := cfg.ReadInConfig(); err != nil {
+		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+			// Config file not found; ignore error if desired
+			log.Fatal("could not find file")
+		} else {
+			// Config file was found but another error was produced
+		}
+	}
+
+	err := cfg.Unmarshal(&config)
+	if err != nil {
+		log.Fatalf("unable to decode into struct, %v", err)
 	}
 
 	// Creating a connection context
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	vsphereUsername := config.Vsphere[0].VsphereUsername
-	vspherePassword := config.Vsphere[0].VspherePassword
-	vsphereServer := config.Vsphere[0].VsphereURL
+	config.UIPort = cfg.GetString("ui_port")
+	config.VsphereUsername = cfg.GetString("vsphere_username")
+	config.VspherePassword = cfg.GetString("vsphere_password")
+	config.VsphereURL = cfg.GetString("vsphere_server")
+	config.VaultAddress = cfg.GetString("vault_address")
+	config.VaultAppRoleMount = cfg.GetString("vault_app_role_mount")
+	config.TLSSkipVerify = cfg.GetBool("tls_skip_verify")
+	config.WrapResponse = cfg.GetBool("wrap_response")
 
-	vcenterURL, err := url.Parse(fmt.Sprintf("https://%v/sdk", vsphereServer))
+	vcenterURL, err := url.Parse(fmt.Sprintf("https://%v/sdk", config.VsphereURL))
 	if err != nil {
 		log.Println(err)
 	}
-	credentials := url.UserPassword(vsphereUsername, vspherePassword)
+	credentials := url.UserPassword(config.VsphereUsername, config.VspherePassword)
 	vcenterURL.User = credentials
 
 	// Connecting to vCenter
@@ -78,7 +100,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Printf("Connected to vCenter: %s", vsphereServer)
+	log.Printf("Connected to vCenter: %s", config.VsphereURL)
 	finder := find.NewFinder(vsphereClient.Client, true)
 
 	dc, err := finder.DatacenterOrDefault(ctx, "")
@@ -103,8 +125,9 @@ func main() {
 	//	http.Handle("/", clientHandler())
 
 	// Start the server.
-	log.Println("UI listening on port", config.UIPort)
-	port := fmt.Sprintf(":%s", config.UIPort)
+	uiport := cfg.GetString("ui_port")
+	log.Println("UI listening on port", uiport)
+	port := fmt.Sprintf(":%s", uiport)
 
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/vms", listVirtualMachines).Methods("POST")
@@ -141,7 +164,7 @@ func handleEvent(ref types.ManagedObjectReference, events []types.BaseEvent) (er
 			eventID := fmt.Sprintf("%d", event.GetEvent().ChainId)
 			if isUnprocessedEvent(event) {
 				database.AddDBRecord(db, vmName, eventID)
-				updateVM(config.Vault[0].VaultAddress, config.Vault[0].VaultToken, vmName)
+				updateVM(config.VaultAddress, config.VaultToken, vmName)
 			}
 		}
 		// Detect VM custom attribute change
@@ -151,7 +174,7 @@ func handleEvent(ref types.ManagedObjectReference, events []types.BaseEvent) (er
 			eventID := fmt.Sprintf("%d", event.GetEvent().ChainId)
 			if isUnprocessedEvent(event) {
 				database.AddDBRecord(db, vmName, eventID)
-				updateVM(config.Vault[0].VaultAddress, config.Vault[0].VaultToken, vmName)
+				updateVM(config.VaultAddress, config.VaultToken, vmName)
 			}
 		}
 	}

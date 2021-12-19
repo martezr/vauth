@@ -31,7 +31,7 @@ jobs:
       env:
         ECR_REGISTRY: public.ecr.aws/i4r5n0t9
         ECR_REPOSITORY: vauth
-        IMAGE_TAG: 1.0
+        IMAGE_TAG: "1.0"
       run: |
         # Build a docker container and push it to ECR 
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .

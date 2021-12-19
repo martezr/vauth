@@ -63,7 +63,7 @@ func main() {
 	if err := cfg.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
 			// Config file not found; ignore error if desired
-			log.Fatal("could not find file")
+			log.Println("No config file found")
 		} else {
 			// Config file was found but another error was produced
 		}

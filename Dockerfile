@@ -16,9 +16,11 @@ RUN go build -o vauth
 FROM gcr.io/distroless/static AS final
  
 USER nonroot:nonroot
- 
+
+WORKDIR /app
+
 # copy compiled app
 COPY --from=build --chown=nonroot:nonroot /app/vauth /vauth
  
 # run binary; use vector form
-ENTRYPOINT ["/vauth"]
+CMD ["/vauth"]

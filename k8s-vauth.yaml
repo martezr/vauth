@@ -23,8 +23,8 @@ metadata:
     name: vauth
 spec:
   containers:
-  - name: vauth-worker
-    image: martezr/vauth-worker
+  - name: vauth
+    image: public.ecr.aws/i4r5n0t9/vauth
     envFrom:
       - configMapRef:
           name: vsphere-config

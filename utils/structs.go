@@ -2,6 +2,7 @@ package utils
 
 type Config struct {
 	UIPort            string `yaml:"ui_port" mapstructure:"UI_PORT"`
+	DataDir           string `yaml:"data_dir" mapstructure:"DATA_DIR"`
 	VsphereURL        string `yaml:"vsphere_url" mapstructure:"VSPHERE_URL"`
 	VsphereUsername   string `yaml:"vsphere_username" mapstructure:"VSPHERE_USERNAME"`
 	VspherePassword   string `yaml:"vsphere_password" mapstructure:"VSPHERE_PASSWORD"`

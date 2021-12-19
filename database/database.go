@@ -7,8 +7,9 @@ import (
 	bolt "go.etcd.io/bbolt"
 )
 
-func StartDB() (database *bolt.DB) {
-	db, err := bolt.Open("vauth.db", 0600, nil)
+func StartDB(dbdir string) (database *bolt.DB) {
+	dbpath := dbdir + "/vauth.db"
+	db, err := bolt.Open(dbpath, 0600, nil)
 	if err != nil {
 		log.Fatal(err)
 	}

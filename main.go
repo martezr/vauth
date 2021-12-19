@@ -79,6 +79,7 @@ func main() {
 	defer cancel()
 
 	config.UIPort = cfg.GetString("ui_port")
+	config.DataDir = cfg.GetString("data_dir")
 	config.VsphereUsername = cfg.GetString("vsphere_username")
 	config.VspherePassword = cfg.GetString("vsphere_password")
 	config.VsphereURL = cfg.GetString("vsphere_server")
@@ -111,7 +112,7 @@ func main() {
 	finder.SetDatacenter(dc)
 	refs := []types.ManagedObjectReference{dc.Reference()}
 
-	db = database.StartDB()
+	db = database.StartDB(config.DatDir)
 
 	database.ListDBRecords(db)
 	// Setting up the event manager

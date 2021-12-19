@@ -1,5 +1,6 @@
 ---
 ui_port: 8000
+data_dir: /app
 vsphere_url: "grtvcenter01.grt.local"
 vsphere_username: "vauth@vsphere.local"
 vsphere_password: "Password123#"

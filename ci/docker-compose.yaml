@@ -1,0 +1,15 @@
+version: "3.9"
+services:
+  vcsim:
+    image: nimmis/vcsim:latest
+    entrypoint: vcsim -host 3 -cluster 1 -vm 20 -l 0.0.0.0:443
+    ports:
+      - "443:443"
+  vault:
+    image: hashicorp/vault:latest
+    environment:
+      - VAULT_DEV_ROOT_TOKEN_ID=vault
+    ports:
+      - "8200:8200"
+  vaultsetup:
+    build: ./vaultsetup

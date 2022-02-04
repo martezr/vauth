@@ -22,7 +22,7 @@ var httpClient = &http.Client{
 }
 
 func FetchAppRole(config utils.Config, vaultAddr string, token string, rolename string, vmname string) (status string, roleid string, secretid string, secretidttl string) {
-	if config.TLSSkipVerify {
+	if config.VaultTLSSkipVerify {
 		tr := &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		}
@@ -35,7 +35,7 @@ func FetchAppRole(config utils.Config, vaultAddr string, token string, rolename 
 	}
 	client.SetToken(token)
 
-	// Verify mount point exists
+	// Verify the mount point exists
 	authMethods, authmethoderr := client.Sys().ListAuth()
 	if authmethoderr != nil {
 		panic(authmethoderr)
@@ -45,7 +45,6 @@ func FetchAppRole(config utils.Config, vaultAddr string, token string, rolename 
 	for k := range authMethods {
 		path := strings.Replace(k, "/", "", -1)
 		if path == config.VaultAppRoleMount {
-			log.Printf("Found %s mount point", config.VaultAppRoleMount)
 			pathExists = true
 		}
 	}
@@ -91,7 +90,7 @@ func FetchAppRole(config utils.Config, vaultAddr string, token string, rolename 
 		}
 		secretpath := fmt.Sprintf("auth/%s/role/%s/secret-id", config.VaultAppRoleMount, rolename)
 
-		if config.WrapResponse {
+		if config.VaultWrapResponse {
 			client.SetWrappingLookupFunc(func(operation, path string) string {
 				return "5m"
 			})
@@ -102,7 +101,11 @@ func FetchAppRole(config utils.Config, vaultAddr string, token string, rolename 
 			panic(newerr)
 		}
 
-		if config.WrapResponse {
+		tokenTTL := secretdata.Data["secret_id_ttl"]
+
+		log.Printf("Token TTL: %v", tokenTTL)
+
+		if config.VaultWrapResponse {
 			if secretdata == nil {
 				log.Fatal("nil secret")
 			}

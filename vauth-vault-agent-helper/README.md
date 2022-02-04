@@ -1,7 +1,7 @@
 Vault Agent vAuth Helper
 =======
 
-Helper application for automatically generating HashiCorp Vault AppRole credential files using credentials fetching from vAuth.
+The Vault Agent vAuth helper application for automatically generating HashiCorp Vault AppRole credential files using credentials fetching from vAuth.
 
 # Getting Started
 
@@ -20,3 +20,8 @@ secret_id_file_path = /tmp/secret.txt
 |sync_interval||
 |role_id_file_path||
 |secret_id_file_path||
+
+
+
+3. Create a `vauth-agent`
+

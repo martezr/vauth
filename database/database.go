@@ -1,9 +1,9 @@
 package database
 
 import (
-	"fmt"
 	"log"
 
+	"github.com/martezr/vauth/utils"
 	bolt "go.etcd.io/bbolt"
 )
 
@@ -35,7 +35,7 @@ func AddDBRecord(db *bolt.DB, key string, data string) {
 			return err
 		}
 
-		log.Printf("Record Added: %s", data)
+		//log.Printf("Record Added: %s", data)
 		err = bucket.Put([]byte(key), []byte(data))
 		if err != nil {
 			return err
@@ -58,15 +58,18 @@ func ViewDBRecord(db *bolt.DB, key string) (data string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Printf("Record Read: %s", data)
+	//log.Printf("Record Read: %s", data)
 	return data
 }
 
-func ListDBRecords(db *bolt.DB) {
+func ListDBRecords(db *bolt.DB) (vms []utils.VmRecord) {
 	err := db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte("VirtualMachines"))
 		b.ForEach(func(k, v []byte) error {
-			fmt.Printf("key=%s, value=%s\n", k, v)
+			var vmdata utils.VmRecord
+			vmdata.Name = string(k)
+			vmdata.LatestEventId = string(v)
+			vms = append(vms, vmdata)
 			return nil
 		})
 
@@ -75,4 +78,5 @@ func ListDBRecords(db *bolt.DB) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	return vms
 }

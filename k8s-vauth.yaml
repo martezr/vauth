@@ -10,13 +10,14 @@ metadata:
   namespace: vauth
 data:
   VSPHERE_SERVER: grtvcenter01.grt.local
+  VSPHERE_TLS_SKIP_VERIFY: true
   VSPHERE_USERNAME: vauth@vsphere.local
   VSPHERE_PASSWORD: Hashicorp1#
   VAULT_ADDRESS: https://grtmanage01.grt.local:8200
   VAULT_TOKEN: "s.ewdkchV1oqIwTxxI8G3INWVG"
   VAULT_APPROLE_MOUNT: approle
-  WRAP_RESPONSE: true
-  TLS_SKIP_VERIFY: true
+  VAULT_WRAP_RESPONSE: true
+  VAULT_TLS_SKIP_VERIFY: true
 ---
 apiVersion: v1
 kind: Pod

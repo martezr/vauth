@@ -1,16 +1,19 @@
 package utils
 
-type VmRecords struct {
-	Records []VmRecord `json:"vms"`
+// VMRecords
+type VMRecords struct {
+	Records []VMRecord `json:"vms"`
 	Total   int        `json:"total"`
 }
 
-type VmRecord struct {
+// VMRecord
+type VMRecord struct {
 	Name          string `json:"name"`
 	LatestEventId string `json:"latest_event_id"`
 	Role          string `json:"role"`
 }
 
+// Config is the
 type Config struct {
 	UIPort               string `yaml:"ui_port" mapstructure:"UI_PORT"`
 	DataDir              string `yaml:"data_dir" mapstructure:"DATA_DIR"`

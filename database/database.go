@@ -7,6 +7,7 @@ import (
 	bolt "go.etcd.io/bbolt"
 )
 
+// StartDB instantiates the database
 func StartDB(dbdir string) (database *bolt.DB) {
 	dbpath := dbdir + "/vauth.db"
 	db, err := bolt.Open(dbpath, 0600, nil)
@@ -27,6 +28,7 @@ func StartDB(dbdir string) (database *bolt.DB) {
 	return db
 }
 
+// AddDBRecord adds a database record
 func AddDBRecord(db *bolt.DB, key string, data string) {
 	// store some data
 	err := db.Update(func(tx *bolt.Tx) error {
@@ -48,6 +50,7 @@ func AddDBRecord(db *bolt.DB, key string, data string) {
 	}
 }
 
+// ViewDBRecord gets a single database record
 func ViewDBRecord(db *bolt.DB, key string) (data string) {
 	err := db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte("VirtualMachines"))
@@ -62,11 +65,12 @@ func ViewDBRecord(db *bolt.DB, key string) (data string) {
 	return data
 }
 
-func ListDBRecords(db *bolt.DB) (vms []utils.VmRecord) {
+// ListDBRecords gets all the database records
+func ListDBRecords(db *bolt.DB) (vms []utils.VMRecord) {
 	err := db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte("VirtualMachines"))
 		b.ForEach(func(k, v []byte) error {
-			var vmdata utils.VmRecord
+			var vmdata utils.VMRecord
 			vmdata.Name = string(k)
 			vmdata.LatestEventId = string(v)
 			vms = append(vms, vmdata)

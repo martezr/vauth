@@ -2,8 +2,10 @@ package cmd
 
 import (
 	"context"
+	"embed"
 	"encoding/json"
 	"fmt"
+	"io/fs"
 	"log"
 	"net/http"
 	"net/url"
@@ -12,9 +14,7 @@ import (
 	"reflect"
 	"strconv"
 	"syscall"
-	"time"
 
-	"github.com/gorilla/mux"
 	"github.com/martezr/vauth/approle"
 	"github.com/martezr/vauth/database"
 	"github.com/martezr/vauth/utils"
@@ -32,10 +32,6 @@ import (
 
 type extraConfig []types.BaseOptionValue
 
-var httpClient = &http.Client{
-	Timeout: 10 * time.Second,
-}
-
 var (
 	db *bolt.DB
 )
@@ -43,14 +39,14 @@ var (
 var config utils.Config
 var vsphereClient *govmomi.Client
 
-////go:embed frontend/dist/*
-//var webUI embed.FS
+//go:embed webui/*
+var webUI embed.FS
 
-//func clientHandler() http.Handler {
-//	fsys := fs.FS(webUI)
-//	contentStatic, _ := fs.Sub(fsys, "frontend/dist")
-//	return http.FileServer(http.FS(contentStatic))
-//}
+func clientHandler() http.Handler {
+	fsys := fs.FS(webUI)
+	contentStatic, _ := fs.Sub(fsys, "webui")
+	return http.FileServer(http.FS(contentStatic))
+}
 
 func init() {
 	rootCmd.AddCommand(serverCmd)
@@ -58,7 +54,7 @@ func init() {
 
 var serverCmd = &cobra.Command{
 	Use:   "server",
-	Short: "Run the vAuth server",
+	Short: "Start the vAuth server",
 	Long:  `Show this help output, or the help for a specified subcommand.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		server()
@@ -112,6 +108,7 @@ func server() {
 
 	// Connecting to vCenter
 	log.Print("Connecting to vCenter")
+
 	vsphereClient, err = govmomi.NewClient(ctx, vcenterURL, true)
 	if err != nil {
 		log.Fatal(err)
@@ -138,19 +135,27 @@ func server() {
 		os.Exit(1)
 	}
 
-	//	http.Handle("/", clientHandler())
-
 	// Start the server.
 	log.Println("UI listening on port", config.UIPort)
 	port := fmt.Sprintf(":%s", config.UIPort)
 
-	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/vms", listVirtualMachines).Methods("GET")
-	log.Fatal(http.ListenAndServe(port, router))
+	//	router := mux.NewRouter().StrictSlash(true)
+	//	router.HandleFunc("/", rootHandler)
+	//	router.HandleFunc("/vms", listVirtualMachines).Methods("GET")
+	//	router.HandleFunc("/snapshot", BackupHandleFunc).Methods("GET")
+	//	log.Fatal(http.ListenAndServe(port, router))
+	http.Handle("/", clientHandler())
+	http.HandleFunc("/api/v1/vms", listVirtualMachines)
+	http.HandleFunc("/api/v1/snapshot", BackupHandleFunc)
+
+	// Start the server.
+	log.Panic(
+		http.ListenAndServe(port, nil),
+	)
 }
 
 func listVirtualMachines(w http.ResponseWriter, r *http.Request) {
-	var output utils.VmRecords
+	var output utils.VMRecords
 	data := database.ListDBRecords(db)
 	output.Records = data
 	output.Total = len(data)

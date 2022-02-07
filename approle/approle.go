@@ -13,6 +13,7 @@ import (
 	"github.com/martezr/vauth/utils"
 )
 
+// Metadata defines the secret ID metadata payload for auditing
 type Metadata struct {
 	VirtualMachineName string `json:"name"`
 }
@@ -21,6 +22,7 @@ var httpClient = &http.Client{
 	Timeout: 10 * time.Second,
 }
 
+// FetchAppRole fetches the approle credentials
 func FetchAppRole(config utils.Config, vaultAddr string, token string, rolename string, vmname string) (status string, roleid string, secretid string, secretidttl string) {
 	if config.VaultTLSSkipVerify {
 		tr := &http.Transport{
@@ -31,14 +33,14 @@ func FetchAppRole(config utils.Config, vaultAddr string, token string, rolename 
 	}
 	client, err := api.NewClient(&api.Config{Address: vaultAddr, HttpClient: httpClient})
 	if err != nil {
-		panic(err)
+		log.Println(err)
 	}
 	client.SetToken(token)
 
 	// Verify the mount point exists
 	authMethods, authmethoderr := client.Sys().ListAuth()
 	if authmethoderr != nil {
-		panic(authmethoderr)
+		log.Println(authmethoderr)
 	}
 
 	pathExists := false
@@ -58,7 +60,7 @@ func FetchAppRole(config utils.Config, vaultAddr string, token string, rolename 
 	path := fmt.Sprintf("auth/%s/role", config.VaultAppRoleMount)
 	roles, roleerr := client.Logical().List(path)
 	if roleerr != nil {
-		panic(roleerr)
+		log.Println(roleerr)
 	}
 
 	if roles == nil {
@@ -79,7 +81,7 @@ func FetchAppRole(config utils.Config, vaultAddr string, token string, rolename 
 		rolepath := fmt.Sprintf("auth/%s/role/%s/role-id", config.VaultAppRoleMount, rolename)
 		data, err := client.Logical().Read(rolepath)
 		if err != nil {
-			panic(err)
+			log.Println(err)
 		}
 
 		metadataPayload := map[string]string{"virtual_machine_name": vmname}
@@ -98,7 +100,7 @@ func FetchAppRole(config utils.Config, vaultAddr string, token string, rolename 
 
 		secretdata, newerr := client.Logical().Write(secretpath, options)
 		if newerr != nil {
-			panic(newerr)
+			log.Println(newerr)
 		}
 
 		tokenTTL := secretdata.Data["secret_id_ttl"]
@@ -107,10 +109,10 @@ func FetchAppRole(config utils.Config, vaultAddr string, token string, rolename 
 
 		if config.VaultWrapResponse {
 			if secretdata == nil {
-				log.Fatal("nil secret")
+				log.Println("nil secret")
 			}
 			if secretdata.WrapInfo == nil {
-				log.Fatal("nil wrap info")
+				log.Println("nil wrap info")
 			}
 
 			token := secretdata.WrapInfo.Token

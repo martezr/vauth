@@ -10,6 +10,7 @@ metadata:
   namespace: vauth
 data:
   VSPHERE_SERVER: "grtvcenter01.grt.local"
+  DATA_DIR: "/vauthdata"
   VSPHERE_TLS_SKIP_VERIFY: "true"
   VSPHERE_USERNAME: "vauth@vsphere.local"
   VSPHERE_PASSWORD: "Password123#"
@@ -30,6 +31,13 @@ spec:
   containers:
   - name: vauth
     image: public.ecr.aws/i4r5n0t9/vauth:1.0
+    imagePullPolicy: Always
     envFrom:
       - configMapRef:
           name: vauth-config
+    volumeMounts:
+    - mountPath: /vauthdata
+      name: cache-volume
+  volumes:
+  - name: cache-volume
+    emptyDir: {}

@@ -25,4 +25,4 @@ WORKDIR /app
 COPY --from=build --chown=nonroot:nonroot /app /app
 
 # run binary; use vector form
-CMD ["/app/vauth"]
+CMD ["/app/vauth","server"]

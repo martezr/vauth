@@ -1,12 +1,12 @@
 ---
 ui_port: 8000
-data_dir: /app
+data_dir: .
 vsphere_server: "grtvcenter01.grt.local"
 vsphere_tls_skip_verify: true
 vsphere_username: "vauth@vsphere.local"
 vsphere_password: "Password123#"
 vault_address: "https://grtmanage01.grt.local:8200"
-vault_token: "s.ewdkchV1oqIwTxxI8G3INWVG"
+vault_token: "s.r5A9FBMiQyRzXcEh7Ab7ZE4K"
 vault_approle_mount: "approle"
 vault_wrap_response: true
 vault_tls_skip_verify: true

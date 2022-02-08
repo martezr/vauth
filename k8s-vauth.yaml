@@ -9,15 +9,15 @@ metadata:
   name: vauth-config
   namespace: vauth
 data:
-  VSPHERE_SERVER: grtvcenter01.grt.local
-  VSPHERE_TLS_SKIP_VERIFY: true
-  VSPHERE_USERNAME: vauth@vsphere.local
-  VSPHERE_PASSWORD: Hashicorp1#
-  VAULT_ADDRESS: https://grtmanage01.grt.local:8200
-  VAULT_TOKEN: "s.ewdkchV1oqIwTxxI8G3INWVG"
-  VAULT_APPROLE_MOUNT: approle
-  VAULT_WRAP_RESPONSE: true
-  VAULT_TLS_SKIP_VERIFY: true
+  VSPHERE_SERVER: "grtvcenter01.grt.local"
+  VSPHERE_TLS_SKIP_VERIFY: "true"
+  VSPHERE_USERNAME: "vauth@vsphere.local"
+  VSPHERE_PASSWORD: "Password123#"
+  VAULT_ADDRESS: "https://grtmanage01.grt.local:8200"
+  VAULT_TOKEN: "s.r5A9FBMiQyRzXcEh7Ab7ZE4K"
+  VAULT_APPROLE_MOUNT: "approle"
+  VAULT_WRAP_RESPONSE: "true"
+  VAULT_TLS_SKIP_VERIFY: "true"
 ---
 apiVersion: v1
 kind: Pod
@@ -29,7 +29,7 @@ metadata:
 spec:
   containers:
   - name: vauth
-    image: public.ecr.aws/i4r5n0t9/vauth
+    image: public.ecr.aws/i4r5n0t9/vauth:1.0
     envFrom:
       - configMapRef:
           name: vauth-config

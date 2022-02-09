@@ -52,7 +52,7 @@ func FetchAppRole(config utils.Config, vaultAddr string, token string, rolename 
 	}
 
 	if !pathExists {
-		log.Printf("Unable to find %s mount point", config.VaultAppRoleMount)
+		log.Printf("unable to find %s mount point", config.VaultAppRoleMount)
 		return "role not found", "", "", ""
 	}
 
@@ -103,9 +103,9 @@ func FetchAppRole(config utils.Config, vaultAddr string, token string, rolename 
 			log.Println(newerr)
 		}
 
-		tokenTTL := secretdata.Data["secret_id_ttl"]
+		tokenData := secretdata
 
-		log.Printf("Token TTL: %v", tokenTTL)
+		log.Printf("token Data: %v", tokenData)
 
 		if config.VaultWrapResponse {
 			if secretdata == nil {

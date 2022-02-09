@@ -108,13 +108,13 @@ func server() {
 	vcenterURL.User = credentials
 
 	// Connecting to vCenter
-	log.Print("Connecting to vCenter")
+	log.Print("connecting to vCenter")
 
 	vsphereClient, err = govmomi.NewClient(ctx, vcenterURL, true)
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Printf("Connected to vCenter: %s", config.VsphereServer)
+	log.Printf("connected to vCenter: %s", config.VsphereServer)
 	finder := find.NewFinder(vsphereClient.Client, true)
 
 	dc, err := finder.DatacenterOrDefault(ctx, "")
@@ -137,7 +137,7 @@ func server() {
 	}
 
 	// Start the server.
-	log.Println("UI listening on port", config.UIPort)
+	log.Println("ui listening on port", config.UIPort)
 	port := fmt.Sprintf(":%s", config.UIPort)
 
 	//	router := mux.NewRouter().StrictSlash(true)
@@ -171,7 +171,7 @@ func handleEvent(ref types.ManagedObjectReference, events []types.BaseEvent) (er
 		// Detect VM power on events
 		if eventType == "*types.VmPoweredOnEvent" {
 			vmName := event.GetEvent().Vm.Name
-			log.Printf("Detected power on event for %s", vmName)
+			log.Printf("detected power on event for %s", vmName)
 			eventID := fmt.Sprintf("%d", event.GetEvent().ChainId)
 			if isUnprocessedEvent(event) {
 				database.AddDBRecord(db, vmName, eventID)
@@ -181,7 +181,7 @@ func handleEvent(ref types.ManagedObjectReference, events []types.BaseEvent) (er
 		// Detect VM custom attribute change
 		if eventType == "*types.CustomFieldValueChangedEvent" {
 			vmName := event.GetEvent().Vm.Name
-			log.Printf("Detected custom attribute change event for %s", vmName)
+			log.Printf("detected custom attribute change event for %s", vmName)
 			eventID := fmt.Sprintf("%d", event.GetEvent().ChainId)
 			if isUnprocessedEvent(event) {
 				database.AddDBRecord(db, vmName, eventID)
@@ -252,7 +252,7 @@ func updateVM(vaultAddr string, token string, vmname string) {
 						customAttrs[fmt.Sprint(fv.GetCustomFieldValue().Key)] = value
 					}
 					if fv.GetCustomFieldValue().Key == attID {
-						log.Printf("Found the %s role associated with %s", value, vmname)
+						log.Printf("found the %s role associated with %s", value, vmname)
 						role = value
 					}
 				}
@@ -270,13 +270,13 @@ func updateVM(vaultAddr string, token string, vmname string) {
 						ExtraConfig: settings,
 					}
 					vmdata.Reconfigure(ctx, authSpec)
-					log.Printf("Updated VM: %s", vmname)
+					log.Printf("updated VM: %s", vmname)
 				}
 				if status == "role not found" {
-					log.Printf("The %s role associated with %s does not exist in Vault", role, vmname)
+					log.Printf("the %s role associated with %s does not exist in Vault", role, vmname)
 				}
 			} else {
-				log.Printf("No role associated with %s", vmname)
+				log.Printf("no role associated with %s", vmname)
 			}
 		}
 	}

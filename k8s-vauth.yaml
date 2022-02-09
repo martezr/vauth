@@ -14,7 +14,7 @@ data:
   VSPHERE_TLS_SKIP_VERIFY: "true"
   VSPHERE_USERNAME: "vauth@vsphere.local"
   VSPHERE_PASSWORD: "Password123#"
-  VAULT_ADDRESS: "https://grtmanage01.grt.local:8200"
+  VAULT_ADDRESS: "https://10.0.0.202:8200"
   VAULT_TOKEN: "s.r5A9FBMiQyRzXcEh7Ab7ZE4K"
   VAULT_APPROLE_MOUNT: "approle"
   VAULT_WRAP_RESPONSE: "true"

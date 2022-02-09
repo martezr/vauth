@@ -97,6 +97,7 @@ func server() {
 	config.VaultAddress = cfg.GetString("vault_address")
 	config.VaultAppRoleMount = cfg.GetString("vault_approle_mount")
 	config.VaultTLSSkipVerify = cfg.GetBool("vault_tls_skip_verify")
+	config.VaultToken = cfg.GetString("vault_token")
 	config.VaultWrapResponse = cfg.GetBool("vault_wrap_response")
 
 	vcenterURL, err := url.Parse(fmt.Sprintf("https://%v/sdk", config.VsphereServer))

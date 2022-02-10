@@ -11,12 +11,15 @@ VMware vSphere VM Identity Platform
 
 The vAuth platform provides identity information to virtual machines similiar to the metadata provided by public cloud providers. The platform is built to work with [HashiCorp Vault](https://www.vaultproject.io/) to enable VMware vSphere to be used as a trusted platform similar to public cloud providers such as AWS and Azure.
 
-
 ## How vAuth Works
 
-The vAuth platform queries the virtual machine
+The following steps provide a high level overview of how the vAuth platform works and interacts with vSphere and HashiCorp Vault:
 
-vAuth generates a new secret ID for the Vault approle role
+1. The vAuth platform listens for virtual machine power on and virtual machine custom attribute change events. 
+2. When one of these events are detected the platform looks up the role associated with the virtual machine. The role is defined via the `vauth-role` custom attribute.
+3. The vAuth platform then queries the configured HashiCorp Vault instance from the approle backend configured.
+4. If a matching role is found then a role ID and secret ID are generated for that virtual machine and set in the virtual machine's VMware guest information.
+5. Once the credentials have been set, the virtual machine guest operating system is able to query the credentials.
 
 ## HashiCorp Vault Minimum Permissions
 
@@ -62,21 +65,6 @@ The following operations require a privilege to be assigned to the vSphere accou
 
 ## Setup
 
-
-```
----
-ui_port: 8000
-data_dir: .
-vsphere_server: "localhost"
-vsphere_username: "user"
-vsphere_password: "pass"
-vault_address: "http://localhost:8200"
-vault_token: "vault"
-vault_approle_mount: "approle"
-wrap_response: true
-tls_skip_verify: true
-```
-
 |Setting Name|Description|Type|Example|
 |------------|-----------|---|----|
 |ui_port     | The port on which the vAuth web UI will listen|string|8000|
@@ -111,6 +99,7 @@ vauth server
 ```
 ### Docker Installation
 
+The vAuth platform can be deployed with Docker using the following command:
 
 ```
 docker run --name vauth -e UI_PORT=9000 -e DATA_DIR=/app -e VSPHERE_SERVER=grtvcenter01.grt.local -e VSPHERE_USERNAME=vauth@vsphere.local -e VSPHERE_PASSWORD="Password123#" -e VAULT_ADDRESS="https://grtmanage01.grt.local:8200" -e VAULT_TOKEN="s.ewdkchV1oqIwTxxI8G3INWVG" -e VAULT_APPROLE_MOUNT=approle public.ecr.aws/i4r5n0t9/vauth:1.0
@@ -118,7 +107,7 @@ docker run --name vauth -e UI_PORT=9000 -e DATA_DIR=/app -e VSPHERE_SERVER=grtvc
 
 ### Kubernetes Installation
 
-The vAuth platform can be deployed on a Kubernetes cluster with the following steps.
+The vAuth platform can be deployed to a Kubernetes cluster using the following manifest:
 
 ```yaml
 apiVersion: v1

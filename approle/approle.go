@@ -103,9 +103,7 @@ func FetchAppRole(config utils.Config, vaultAddr string, token string, rolename 
 			log.Println(newerr)
 		}
 
-		tokenData := secretdata
-
-		log.Printf("token Data: %v", tokenData)
+		//tokenData := secretdata
 
 		if config.VaultWrapResponse {
 			if secretdata == nil {

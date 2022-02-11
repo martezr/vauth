@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"crypto/tls"
 	"embed"
 	"encoding/json"
 	"fmt"
@@ -14,6 +15,7 @@ import (
 	"reflect"
 	"strconv"
 	"syscall"
+	"time"
 
 	"github.com/martezr/vauth/approle"
 	"github.com/martezr/vauth/database"
@@ -62,7 +64,7 @@ var serverCmd = &cobra.Command{
 }
 
 func server() {
-	log.Println("Started vAuth 0.0.1")
+	log.Println("starting vAuth 0.0.1")
 	cfg := viper.New()
 	cfg.AddConfigPath(".")
 	cfg.SetConfigName("config")
@@ -108,7 +110,7 @@ func server() {
 	vcenterURL.User = credentials
 
 	// Connecting to vCenter
-	log.Print("connecting to vCenter")
+	log.Print("connecting to vCenter server")
 
 	vsphereClient, err = govmomi.NewClient(ctx, vcenterURL, true)
 	if err != nil {
@@ -136,23 +138,72 @@ func server() {
 		os.Exit(1)
 	}
 
-	// Start the server.
 	log.Println("ui listening on port", config.UIPort)
 	port := fmt.Sprintf(":%s", config.UIPort)
 
-	//	router := mux.NewRouter().StrictSlash(true)
-	//	router.HandleFunc("/", rootHandler)
-	//	router.HandleFunc("/vms", listVirtualMachines).Methods("GET")
-	//	router.HandleFunc("/snapshot", BackupHandleFunc).Methods("GET")
-	//	log.Fatal(http.ListenAndServe(port, router))
 	http.Handle("/", clientHandler())
 	http.HandleFunc("/api/v1/vms", listVirtualMachines)
 	http.HandleFunc("/api/v1/snapshot", BackupHandleFunc)
+	http.HandleFunc("/api/v1/health", GetHealthStatus)
 
-	// Start the server.
 	log.Panic(
 		http.ListenAndServe(port, nil),
 	)
+}
+
+func GetVsphereHealthStatus() string {
+	var httpClient = &http.Client{
+		Timeout: 10 * time.Second,
+	}
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+
+	httpClient.Transport = tr
+	vSphereURL := fmt.Sprintf("https://%s", config.VsphereServer)
+	resp, err := httpClient.Get(vSphereURL)
+	if err != nil {
+		log.Println(err)
+		return "unhealthy"
+	}
+	if resp.StatusCode == 200 {
+		return "healthy"
+	} else {
+		return "unhealthy"
+	}
+}
+
+func GetVaultHealthStatus() string {
+	var httpClient = &http.Client{
+		Timeout: 10 * time.Second,
+	}
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+
+	httpClient.Transport = tr
+	VaultURL := fmt.Sprintf("%s/v1/sys/health", config.VaultAddress)
+	resp, err := httpClient.Get(VaultURL)
+	if err != nil {
+		log.Println(err)
+		return "unhealthy"
+	}
+	if resp.StatusCode == 200 {
+		return "healthy"
+	} else {
+		return "unhealthy"
+	}
+}
+
+// GetHealthStatus returns the health of the vAuth platform
+func GetHealthStatus(w http.ResponseWriter, r *http.Request) {
+	var output utils.HealthStatus
+	output.Version = "0.0.1"
+	output.VaultStatus = GetVaultHealthStatus()
+	output.VsphereStatus = GetVsphereHealthStatus()
+	jsonOutput, _ := json.MarshalIndent(output, "", " ")
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonOutput)
 }
 
 func listVirtualMachines(w http.ResponseWriter, r *http.Request) {

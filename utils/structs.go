@@ -27,3 +27,9 @@ type Config struct {
 	VaultTLSSkipVerify   bool   `yaml:"vault_tls_skip_verify,optional" mapstructure:"VAULT_TLS_SKIP_VERIFY"`
 	VaultWrapResponse    bool   `yaml:"vault_wrap_response,optional" mapstructure:"VAULT_WRAP_RESPONSE"`
 }
+
+type HealthStatus struct {
+	Version       string `json:"version"`
+	VaultStatus   string `json:"vault_status"`
+	VsphereStatus string `json:"vsphere_status"`
+}

@@ -5,6 +5,7 @@ vsphere_server: "grtvcenter01.grt.local"
 vsphere_tls_skip_verify: true
 vsphere_username: "vauth@vsphere.local"
 vsphere_password: "Password123#"
+vsphere_datacenters: ["GRT"]
 vault_address: "https://grtmanage01.grt.local:8200"
 vault_token: "s.r5A9FBMiQyRzXcEh7Ab7ZE4K"
 vault_approle_mount: "approle"

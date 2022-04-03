@@ -2,7 +2,7 @@ version: "3.9"
 services:
   vcsim:
     image: nimmis/vcsim:latest
-    entrypoint: vcsim -host 3 -cluster 1 -vm 20 -l 0.0.0.0:443
+    entrypoint: vcsim -dc 3 -host 3 -cluster 2 -vm 20 -l 0.0.0.0:443
     ports:
       - "443:443"
   vault:
@@ -13,3 +13,5 @@ services:
       - "8200:8200"
   vaultsetup:
     build: ./vaultsetup
+  vspheresetup:
+    build: ./vspheresetup

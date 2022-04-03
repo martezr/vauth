@@ -73,6 +73,7 @@ The following operations require a privilege to be assigned to the vSphere accou
 |vsphere_tls_skip_verify | Whether to skip the verification of the vCenter SSL certificate or not | boolean | false |
 | vsphere_username | The username of the user account that vAuth will use to connect to vCenter | string | vauth@vsphere.local |
 | vsphere_password | The password of the user account that vAuth will use to connect to vCenter | string | securepassword |
+| vsphere_datacenters | The vSphere datacenters to enable authentication on | []string | ["DC1","DC2] |
 | vault_address | The URL of the HashiCorp Vault instance that vAuth will connect to | string | https://demo.domain.local:8200 |
 | vault_token | The vault token that used by vAuth to authenticate to HashiCorp Vault | string | vaultpassword|
 | vault_approle_mount | The name of the approle authentication backend used by vAuth to generate new approle role credentials | string | approle |
@@ -82,9 +83,9 @@ The following operations require a privilege to be assigned to the vSphere accou
 
 ### Binary Installation
 
-The following
+The vAuth platform can be deployed using the vAuth binary on linux systems.
 
-1. Download the vAuth binary from Github
+1. Download the vAuth binary from the latest Github release
 
 2. Make the vAuth binary executable
 
@@ -92,11 +93,12 @@ The following
 chmod +x vauth
 ```
 
-3. 
+3. Start the vAuth service
 
 ```
 vauth server
 ```
+
 ### Docker Installation
 
 The vAuth platform can be deployed with Docker using the following command:
@@ -126,6 +128,7 @@ data:
   VSPHERE_TLS_SKIP_VERIFY: "true"
   VSPHERE_USERNAME: "vauth@vsphere.local"
   VSPHERE_PASSWORD: "Password123#"
+  VSPHERE_DATACENTERS: ["DC1","DC2"]
   VAULT_ADDRESS: "https://10.0.0.202:8200"
   VAULT_TOKEN: "s.r5A9FBMiQyRzXcEh7Ab7ZE4K"
   VAULT_APPROLE_MOUNT: "approle"

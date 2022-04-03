@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/tls"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
@@ -39,18 +40,22 @@ func main() {
 		panic(authmethoderr)
 	}
 	fmt.Println(authMethods)
+	roles := [5]string{"app01", "app02", "app03", "app04", "app05"}
+	for _, role := range roles {
+		log.Println(role)
+		createRole(client, role)
+	}
+}
 
+func createRole(client *api.Client, rolename string) {
 	options := map[string]interface{}{
-		"secret_id_ttl":  "5m",
+		"secret_id_ttl":  "10m",
 		"token_num_uses": 10,
 		"token_ttl":      "60m",
 	}
 
-	secretdata, newerr := client.Logical().Write("auth/approle/role/demo01", options)
+	_, newerr := client.Logical().Write("auth/approle/role/"+rolename, options)
 	if newerr != nil {
 		panic(newerr)
 	}
-
-	fmt.Println(secretdata)
-
 }

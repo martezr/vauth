@@ -2,10 +2,12 @@
 ui_port: 8000
 data_dir: .
 vsphere_server: "localhost"
+vsphere_tls_skip_verify: true
 vsphere_username: "user"
 vsphere_password: "pass"
+vsphere_datacenters: ["DC0","DC1","DC2"]
 vault_address: "http://localhost:8200"
 vault_token: "vault"
 vault_approle_mount: "approle"
-wrap_response: true
-tls_skip_verify: true
+vault_wrap_response: true
+vault_tls_skip_verify: true

@@ -3,7 +3,7 @@ export GOVC_INSECURE=true
 
 govc fields.add -type VirtualMachine 'vauth-role'
 
-govc ls /DC0/vm | xargs govc fields.set 'vauth-role' 'demo01'
+govc ls /DC0/vm | xargs govc fields.set 'vauth-role' 'app01'
 
 sleep 5
 

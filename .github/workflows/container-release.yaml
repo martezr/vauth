@@ -1,10 +1,9 @@
+name: vAuth ECR Build
 on:
   push:
     branches: [ master ]
   pull_request:
     branches: [ master ]
-
-name: vAuth ECR Build
 
 jobs:
   deploy:

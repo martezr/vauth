@@ -11,10 +11,8 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"os/signal"
 	"reflect"
 	"strconv"
-	"syscall"
 	"time"
 
 	"github.com/martezr/vauth/approle"
@@ -96,6 +94,7 @@ func server() {
 	config.VsphereTLSSkipVerify = cfg.GetBool("vsphere_tls_skip_verify")
 	config.VsphereUsername = cfg.GetString("vsphere_username")
 	config.VspherePassword = cfg.GetString("vsphere_password")
+	config.VsphereDatacenters = cfg.GetStringSlice("vsphere_datacenters")
 	config.VaultAddress = cfg.GetString("vault_address")
 	config.VaultAppRoleMount = cfg.GetString("vault_approle_mount")
 	config.VaultTLSSkipVerify = cfg.GetBool("vault_tls_skip_verify")
@@ -118,24 +117,26 @@ func server() {
 	}
 	log.Printf("connected to vCenter: %s", config.VsphereServer)
 	finder := find.NewFinder(vsphereClient.Client, true)
-
-	dc, err := finder.DatacenterOrDefault(ctx, "")
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	finder.SetDatacenter(dc)
-	refs := []types.ManagedObjectReference{dc.Reference()}
-
 	db = database.StartDB(config.DataDir)
 
-	//database.ListDBRecords(db)
-	// Setting up the event manager
-	eventManager := event.NewManager(vsphereClient.Client)
-	go eventManager.Events(ctx, refs, 50, true, false, handleEvent)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %s\n", err)
-		os.Exit(1)
+	for _, datacenter := range config.VsphereDatacenters {
+		// Iterate through dcs
+		dc, err := finder.DatacenterOrDefault(ctx, datacenter)
+		if err != nil {
+			log.Println(err)
+		}
+		log.Println(dc)
+
+		finder.SetDatacenter(dc)
+		refs := []types.ManagedObjectReference{dc.Reference()}
+		//database.ListDBRecords(db)
+		// Setting up the event manager
+		eventManager := event.NewManager(vsphereClient.Client)
+		go eventManager.Events(ctx, refs, 100, true, false, handleEvent)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error: %s\n", err)
+			os.Exit(1)
+		}
 	}
 
 	log.Println("ui listening on port", config.UIPort)
@@ -225,8 +226,13 @@ func handleEvent(ref types.ManagedObjectReference, events []types.BaseEvent) (er
 			log.Printf("detected power on event for %s", vmName)
 			eventID := fmt.Sprintf("%d", event.GetEvent().ChainId)
 			if isUnprocessedEvent(event) {
-				database.AddDBRecord(db, vmName, eventID)
-				updateVM(config.VaultAddress, config.VaultToken, vmName)
+				role := updateVM(config.VaultAddress, config.VaultToken, vmName, event.GetEvent().Datacenter.Name)
+				var vmData utils.VMRecord
+				vmData.LatestEventId = eventID
+				vmData.Name = vmName
+				vmData.Role = role
+				out, _ := json.Marshal(vmData)
+				database.AddDBRecord(db, vmName, string(out))
 			}
 		}
 		// Detect VM custom attribute change
@@ -235,8 +241,22 @@ func handleEvent(ref types.ManagedObjectReference, events []types.BaseEvent) (er
 			log.Printf("detected custom attribute change event for %s", vmName)
 			eventID := fmt.Sprintf("%d", event.GetEvent().ChainId)
 			if isUnprocessedEvent(event) {
-				database.AddDBRecord(db, vmName, eventID)
-				updateVM(config.VaultAddress, config.VaultToken, vmName)
+				role := updateVM(config.VaultAddress, config.VaultToken, vmName, event.GetEvent().Datacenter.Name)
+				var vmData utils.VMRecord
+				vmData.LatestEventId = eventID
+				vmData.Name = vmName
+				vmData.Role = role
+				out, _ := json.Marshal(vmData)
+				database.AddDBRecord(db, vmName, string(out))
+			}
+		}
+		// Detect VM removal events
+		if eventType == "*types.VmRemovedEvent" {
+			vmName := event.GetEvent().Vm.Name
+			log.Printf("detected remove event for %s", vmName)
+			if isUnprocessedEvent(event) {
+				log.Printf("Delete VM: %s", vmName)
+				database.DeleteDBRecord(db, vmName)
 			}
 		}
 	}
@@ -250,7 +270,18 @@ func isUnprocessedEvent(event types.BaseEvent) (response bool) {
 	if err != nil {
 		log.Println(err)
 	}
-	evalID := database.ViewDBRecord(db, vmName)
+	evalData := database.ViewDBRecord(db, vmName)
+	var evalParse utils.VMRecord
+	var evalID string
+	if evalData != "" {
+		err = json.Unmarshal([]byte(evalData), &evalParse)
+		if err != nil {
+			log.Println(err)
+		}
+		evalID = evalParse.LatestEventId
+	} else {
+		evalID = ""
+	}
 	var evalIDInt int
 	if evalID == "" {
 		evalIDInt = 0
@@ -267,23 +298,23 @@ func isUnprocessedEvent(event types.BaseEvent) (response bool) {
 	return false
 }
 
-func updateVM(vaultAddr string, token string, vmname string) {
+func updateVM(vaultAddr string, token string, vmname string, datacenter string) (role string) {
 	// Creating a connection context
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
 	finder := find.NewFinder(vsphereClient.Client, true)
 
-	vsphereDatacenter, err := finder.DatacenterOrDefault(ctx, "")
+	vsphereDatacenter, err := finder.DatacenterOrDefault(ctx, datacenter)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	finder.SetDatacenter(vsphereDatacenter)
 
 	machines, err := finder.VirtualMachineList(ctx, vmname)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 	// Fetch IAM Role information
 	attkey, _ := object.GetCustomFieldsManager(vsphereClient.Client)
@@ -295,7 +326,7 @@ func updateVM(vaultAddr string, token string, vmname string) {
 		machine.Properties(ctx, vmdata.Reference(), nil, &props)
 		if !props.Summary.Config.Template && props.Summary.Runtime.PowerState == "poweredOn" {
 			customAttrs := make(map[string]interface{})
-			role := ""
+			role = ""
 			if len(props.CustomValue) > 0 {
 				for _, fv := range props.CustomValue {
 					value := fv.(*types.CustomFieldStringValue).Value
@@ -331,14 +362,5 @@ func updateVM(vaultAddr string, token string, vmname string) {
 			}
 		}
 	}
-}
-
-func SetupCloseHandler() {
-	c := make(chan os.Signal)
-	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
-	go func() {
-		<-c
-		fmt.Println("\r- Ctrl+C pressed in Terminal")
-		os.Exit(0)
-	}()
+	return role
 }

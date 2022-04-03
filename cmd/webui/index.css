@@ -10,3 +10,16 @@ header {
 .fixed-table-container {
     background-color: white;
 }
+
+.bootstrap-table {
+    padding-top: 1rem;
+}
+
+.card-title {
+    text-align: center;
+    font-size: 50px;
+}
+
+.card-text{
+    text-align: center;
+}

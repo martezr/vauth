@@ -1,6 +1,7 @@
 package database
 
 import (
+	"encoding/json"
 	"log"
 
 	"github.com/martezr/vauth/utils"
@@ -37,7 +38,7 @@ func AddDBRecord(db *bolt.DB, key string, data string) {
 			return err
 		}
 
-		//log.Printf("Record Added: %s", data)
+		log.Printf("vm record added: %s", data)
 		err = bucket.Put([]byte(key), []byte(data))
 		if err != nil {
 			return err
@@ -46,6 +47,15 @@ func AddDBRecord(db *bolt.DB, key string, data string) {
 	})
 
 	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+// DeleteDBRecord deletes a single database record
+func DeleteDBRecord(db *bolt.DB, key string) {
+	if err := db.Update(func(tx *bolt.Tx) error {
+		return tx.Bucket([]byte("VirtualMachines")).Delete([]byte(key))
+	}); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -71,8 +81,15 @@ func ListDBRecords(db *bolt.DB) (vms []utils.VMRecord) {
 		b := tx.Bucket([]byte("VirtualMachines"))
 		b.ForEach(func(k, v []byte) error {
 			var vmdata utils.VMRecord
+			var testdata utils.VMRecord
+			err := json.Unmarshal([]byte(v), &testdata)
+			if err != nil {
+				log.Println(err)
+			}
 			vmdata.Name = string(k)
-			vmdata.LatestEventId = string(v)
+			vmdata.LatestEventId = testdata.LatestEventId
+			vmdata.Role = testdata.Role
+
 			vms = append(vms, vmdata)
 			return nil
 		})

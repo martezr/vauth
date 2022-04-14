@@ -32,16 +32,13 @@ func FetchAppRole(config utils.Config, vaultAddr string, token string, rolename 
 		httpClient.Transport = tr
 	}
 	client, err := api.NewClient(&api.Config{Address: vaultAddr, HttpClient: httpClient})
-	if err != nil {
-		log.Println(err)
-	}
+	logError(err)
+
 	client.SetToken(token)
 
 	// Verify the mount point exists
 	authMethods, authmethoderr := client.Sys().ListAuth()
-	if authmethoderr != nil {
-		log.Println(authmethoderr)
-	}
+	logError(authmethoderr)
 
 	pathExists := false
 	for k := range authMethods {
@@ -59,9 +56,7 @@ func FetchAppRole(config utils.Config, vaultAddr string, token string, rolename 
 	// Evaluate if the role associated with the VM exists
 	path := fmt.Sprintf("auth/%s/role", config.VaultAppRoleMount)
 	roles, roleerr := client.Logical().List(path)
-	if roleerr != nil {
-		log.Println(roleerr)
-	}
+	logError(roleerr)
 
 	if roles == nil {
 		log.Printf("%s contains no roles", config.VaultAppRoleMount)
@@ -80,9 +75,7 @@ func FetchAppRole(config utils.Config, vaultAddr string, token string, rolename 
 	if utils.Contains(outroles, rolename) {
 		rolepath := fmt.Sprintf("auth/%s/role/%s/role-id", config.VaultAppRoleMount, rolename)
 		data, err := client.Logical().Read(rolepath)
-		if err != nil {
-			log.Println(err)
-		}
+		logError(err)
 
 		metadataPayload := map[string]string{"virtual_machine_name": vmname}
 		metadataJSON, _ := json.Marshal(metadataPayload)
@@ -99,9 +92,7 @@ func FetchAppRole(config utils.Config, vaultAddr string, token string, rolename 
 		}
 
 		secretdata, newerr := client.Logical().Write(secretpath, options)
-		if newerr != nil {
-			log.Println(newerr)
-		}
+		logError(newerr)
 
 		//tokenData := secretdata
 
@@ -117,7 +108,22 @@ func FetchAppRole(config utils.Config, vaultAddr string, token string, rolename 
 
 			return "role found", data.Data["role_id"].(string), token, ""
 		}
-		return "role found", data.Data["role_id"].(string), secretdata.Data["secret_id"].(string), string(secretdata.Data["secret_id_ttl"].(json.Number))
+		current_time := time.Now().UTC()
+		val, _ := secretdata.Data["secret_id_ttl"].(json.Number).Int64()
+		leaseTime := time.Second * time.Duration(val)
+
+		tokenExpirationTime := current_time.Add(leaseTime)
+		expirationDate := fmt.Sprintf("%d-%02d-%02dT%02d:%02d:%02dZ",
+			tokenExpirationTime.Year(), tokenExpirationTime.Month(), tokenExpirationTime.Day(),
+			tokenExpirationTime.Hour(), tokenExpirationTime.Minute(), tokenExpirationTime.Second())
+		return "role found", data.Data["role_id"].(string), secretdata.Data["secret_id"].(string), string(expirationDate)
 	}
 	return "role not found", "", "", ""
+}
+
+// logError logs error messages
+func logError(errormessage error) {
+	if errormessage != nil {
+		log.Println(errormessage)
+	}
 }

@@ -1,0 +1,10 @@
+-s dir
+--name vauth
+--license agpl3
+--version 0.0.1
+--architecture all
+--description "vAuth identity platform"
+--url "https://github.com/martezr/vauth"
+--maintainer "Martez Reed>"
+
+vauth=/usr/bin/vauth

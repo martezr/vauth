@@ -64,9 +64,13 @@ var serverCmd = &cobra.Command{
 func server() {
 	log.Println("starting vAuth 0.0.1")
 	cfg := viper.New()
-	cfg.AddConfigPath(".")
-	cfg.SetConfigName("config")
-	cfg.SetConfigType("yaml")
+	if cfgFile != "" {
+		cfg.SetConfigFile(cfgFile)
+	} else {
+		cfg.AddConfigPath(".")
+		cfg.SetConfigName("config")
+		cfg.SetConfigType("yaml")
+	}
 
 	cfg.AutomaticEnv()
 
@@ -348,6 +352,7 @@ func updateVM(vaultAddr string, token string, vmname string, datacenter string) 
 					settings = append(settings, &types.OptionValue{Key: "guestinfo.vault.roleid", Value: roleid})
 					settings = append(settings, &types.OptionValue{Key: "guestinfo.vault.secretid", Value: secretid})
 					settings = append(settings, &types.OptionValue{Key: "guestinfo.vault.secretidttl", Value: secretidttl})
+					settings = append(settings, &types.OptionValue{Key: "guestinfo.vault.vaultaddr", Value: config.VaultAddress})
 					authSpec := types.VirtualMachineConfigSpec{
 						ExtraConfig: settings,
 					}

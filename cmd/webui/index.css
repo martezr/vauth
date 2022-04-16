@@ -1,38 +1,8 @@
-.page-container{
-    min-height: calc(100vh - 4rem);
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-    -ms-flex-direction: column;
-    flex-direction: column;
-    margin-top: 4rem;
-    -webkit-box-pack: end;
-    -ms-flex-pack: end;
-    justify-content: flex-end;
-}
-
-.navbar{
-    height: 4rem;
-    position: fixed;
-    right: 0;
-    left: 0;
-    top: 0;
-}
-body {
-    overflow: hidden;
-}
-
 header {
     width: 100%;
     background-color: #000000;
 }
 
-#content{
-    margin-top: 4rem;
-    min-height: calc(100vh - 4rem);
-}
 .fixed-table-container {
     background-color: white;
 }

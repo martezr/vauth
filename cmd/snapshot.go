@@ -24,6 +24,11 @@ var snapshotCmd = &cobra.Command{
 }
 
 func Snapshot() {
+	dbpath := "vauth.db"
+	db, dberr := bolt.Open(dbpath, 0600, nil)
+	if dberr != nil {
+		log.Fatal(dberr)
+	}
 	err := db.View(func(tx *bolt.Tx) error {
 		f, err := os.Create("mydb.snap")
 		if err != nil {

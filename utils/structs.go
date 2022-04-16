@@ -11,6 +11,7 @@ type VMRecord struct {
 	Name          string `json:"name"`
 	LatestEventId string `json:"latest_event_id"`
 	Role          string `json:"role"`
+	Datacenter    string `json:"datacenter"`
 }
 
 // Config defines the vAuth configuration

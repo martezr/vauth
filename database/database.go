@@ -71,7 +71,6 @@ func ViewDBRecord(db *bolt.DB, key string) (data string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	//log.Printf("Record Read: %s", data)
 	return data
 }
 
@@ -89,6 +88,7 @@ func ListDBRecords(db *bolt.DB) (vms []utils.VMRecord) {
 			vmdata.Name = string(k)
 			vmdata.LatestEventId = testdata.LatestEventId
 			vmdata.Role = testdata.Role
+			vmdata.Datacenter = testdata.Datacenter
 
 			vms = append(vms, vmdata)
 			return nil

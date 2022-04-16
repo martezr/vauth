@@ -26,7 +26,7 @@ The following steps provide a high level overview of how the vAuth platform work
 The vAuth platform requires the following minimum permissions to integrate with HashiCorp Vault.
 
 * List all authentication methods
-* Read and list all roles in the approle backend
+* Read and list all roles in the configured approle backend
 
 The following is an example least privilege Vault policy. The policy assumes that `approle` is the name of the approle authentication method backend/path. 
 
@@ -77,8 +77,8 @@ The following operations require a privilege to be assigned to the vSphere accou
 | vault_address | The URL of the HashiCorp Vault instance that vAuth will connect to | string | https://demo.domain.local:8200 |
 | vault_token | The vault token that used by vAuth to authenticate to HashiCorp Vault | string | vaultpassword|
 | vault_approle_mount | The name of the approle authentication backend used by vAuth to generate new approle role credentials | string | approle |
-| vault_wrap_reponse | | boolean | true |
-| vault_tls_skip_verify | Whether to | boolean | false |
+| vault_wrap_reponse | Whether to wrap the response for the secret ID | boolean | true |
+| vault_tls_skip_verify | Whether to skip the verification of the Vault SSL certificate or not | boolean | false |
 
 
 ### Binary Installation

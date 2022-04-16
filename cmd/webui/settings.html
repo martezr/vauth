@@ -21,15 +21,6 @@
   </head>
   <body onload="status()">
 <div class="page-container">
-<!-- This example requires Tailwind CSS v2.0+ -->
-<!--
-  This example requires updating your template:
-
-  ```
-  <html class="h-full bg-gray-100">
-  <body class="h-full">
-  ```
--->
 <div class="min-h-full">
   <nav class="bg-gray-800">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -41,10 +32,10 @@
           <div class="hidden md:block">
             <div class="ml-10 flex items-baseline space-x-4">
               <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
-              <a href="#" class="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium" aria-current="page">Dashboard</a>
+              <a href="/" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
 
               <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Events</a>
-              <a href="settings.html" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Settings</a>
+              <a href="settings.html" class="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium" aria-current="page">Settings</a>
 
             </div>
           </div>
@@ -118,7 +109,7 @@
     <div class="md:hidden" id="mobile-menu">
       <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
         <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
-        <a href="#" class="bg-gray-900 text-white block px-3 py-2 rounded-md text-base font-medium" aria-current="page">Dashboard</a>
+        <a href="/" class="bg-gray-900 text-white block px-3 py-2 rounded-md text-base font-medium" aria-current="page">Dashboard</a>
 
         <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Events</a>
         <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Settings</a>
@@ -154,7 +145,7 @@
 
   <header class="bg-white shadow">
     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-      <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
+      <h1 class="text-3xl font-bold text-gray-900">Settings</h1>
     </div>
   </header>
   <main>
@@ -183,74 +174,70 @@
                             <div class="w-full">
                                 <div class="flex justify-center my-4"><span
                                         class="block text-gray-600 font-light">Vault Status</span></div>
-                                <div class="flex justify-center my-4"><span id="vault-status"
-                                        class="block text-2xl text-blue-600"></span></div>
+                                <div class="flex justify-center my-4">
+                                <span id="vault-status" class="block text-2xl text-blue-600"></span></div>
                             </div>
                         </div>
                     </div>
                     <div class="lg:w-1/3 mb-4 lg:mb-0 px-2">
                         <div class="w-full flex items-center h-40 px-6 rounded-lg">
                             <div class="w-full">
-                                <div class="flex justify-center my-4"><span
-                                        class="block text-gray-600 font-light">vSphere Status</span></div>
-                                <div class="flex justify-center my-4"><span id="vsphere-status"
-                                        class="block text-2xl text-blue-600"></span></div>
+                                <div class="flex justify-center my-4">
+                                <span class="block text-gray-600 font-light">vSphere Status</span></div>
+                                <div class="flex justify-center my-4">
+                                <span id="vsphere-status" class="block text-2xl text-blue-600"></span></div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
       <!-- /End replace -->
-<div class="flex flex-col mt-8">
-    <div class="py-2 -my-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
-        <div class="inline-block min-w-full overflow-hidden align-middle border-b border-gray-200 shadow sm:rounded-lg">
-            <table class="min-w-full w-100 shadow-md rounded" id="dataTable" >
-                <thead>
-                    <tr>
-                        <th
-                            class="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
-                            Name</th>
-                        <th
-                            class="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
-                            Datacenter</th>
-                        <th
-                            class="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
-                            Role</th>
-                        <th
-                            class="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
-                            Latest Event ID</th>
-                    </tr>
-                </thead>
-            <tbody>
-            </tbody>
-            </table>
-        </div>
+            <div class="flex flex-col mt-8">
+              <div class="py-2 -my-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+                <div class="inline-block min-w-full overflow-hidden align-middle border-b border-gray-200 shadow sm:rounded-lg">
+                  <table class="min-w-full w-100 shadow-md rounded" id="dataTable" >
+                    <thead>
+                        <tr>
+                            <th
+                                class="px-6 py-3 text-s font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
+                                Name</th>
+                            <th
+                                class="px-6 py-3 text-s font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
+                                Datacenter</th>
+                            <th
+                                class="px-6 py-3 text-s font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
+                                Role</th>
+                            <th
+                                class="px-6 py-3 text-s font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
+                                Latest Event ID
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
     </div>
-</div>
-    </div>
-
-
-
-
-  </main>
-</div>
-  </div>
     <script>
-$(document).ready(function () {
+        $(document).ready(function () {
             var url = 'api/v1/vms'
             $.get(url).then(function (res) {
                 $(res.vms).each(function (index, item) {
                     $('#dataTable tbody').append(
-                        '<tr class="border-b"><td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">' + item.name +
-                        '</td><td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">' + item.datacenter +
-                        '</td><td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">' + item.role +
-                        '</td><td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">' + item.latest_event_id + 
+                        '<tr class="border-b"><td class="px-6 py-4 whitespace-nowrap text-m font-medium text-gray-900">' + item.name +
+                        '</td><td class="text-m text-gray-900 font-light px-6 py-4 whitespace-nowrap">' + item.datacenter +
+                        '</td><td class="text-m text-gray-900 font-light px-6 py-4 whitespace-nowrap">' + item.role +
+                        '</td><td class="text-m text-gray-900 font-light px-6 py-4 whitespace-nowrap">' + item.latest_event_id + 
                         '</td></tr>'
                     )
                 });
             })
-            })
+        })
     </script>
   </body>
 </html>

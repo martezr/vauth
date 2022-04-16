@@ -20,7 +20,6 @@ import (
 	"github.com/martezr/vauth/utils"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-
 	"github.com/vmware/govmomi"
 	"github.com/vmware/govmomi/event"
 	"github.com/vmware/govmomi/find"
@@ -78,8 +77,6 @@ func server() {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
 			// Config file not found; ignore error if desired
 			log.Println("No config file found")
-		} else {
-			// Config file was found but another error was produced
 		}
 	}
 
@@ -133,7 +130,6 @@ func server() {
 
 		finder.SetDatacenter(dc)
 		refs := []types.ManagedObjectReference{dc.Reference()}
-		//database.ListDBRecords(db)
 		// Setting up the event manager
 		eventManager := event.NewManager(vsphereClient.Client)
 		go eventManager.Events(ctx, refs, 100, true, false, handleEvent)
@@ -146,7 +142,7 @@ func server() {
 	log.Println("ui listening on port", config.UIPort)
 	port := fmt.Sprintf(":%s", config.UIPort)
 
-	http.Handle("/", clientHandler())
+	http.Handle("/", http.StripPrefix("/", clientHandler()))
 	http.HandleFunc("/api/v1/vms", listVirtualMachines)
 	http.HandleFunc("/api/v1/snapshot", BackupHandleFunc)
 	http.HandleFunc("/api/v1/health", GetHealthStatus)
@@ -235,6 +231,7 @@ func handleEvent(ref types.ManagedObjectReference, events []types.BaseEvent) (er
 				vmData.LatestEventId = eventID
 				vmData.Name = vmName
 				vmData.Role = role
+				vmData.Datacenter = event.GetEvent().Datacenter.Name
 				out, _ := json.Marshal(vmData)
 				database.AddDBRecord(db, vmName, string(out))
 			}
@@ -250,6 +247,7 @@ func handleEvent(ref types.ManagedObjectReference, events []types.BaseEvent) (er
 				vmData.LatestEventId = eventID
 				vmData.Name = vmName
 				vmData.Role = role
+				vmData.Datacenter = event.GetEvent().Datacenter.Name
 				out, _ := json.Marshal(vmData)
 				database.AddDBRecord(db, vmName, string(out))
 			}

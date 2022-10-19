@@ -15,6 +15,7 @@ import (
 	"strconv"
 	"time"
 
+	hclog "github.com/hashicorp/go-hclog"
 	"github.com/martezr/vauth/approle"
 	"github.com/martezr/vauth/database"
 	"github.com/martezr/vauth/utils"
@@ -49,6 +50,7 @@ func clientHandler() http.Handler {
 
 func init() {
 	rootCmd.AddCommand(serverCmd)
+	serverCmd.Flags().BoolP("debug", "d", false, "Help message for toggle")
 }
 
 var serverCmd = &cobra.Command{
@@ -61,7 +63,6 @@ var serverCmd = &cobra.Command{
 }
 
 func server() {
-	log.Println("starting vAuth 0.0.1")
 	cfg := viper.New()
 	if cfgFile != "" {
 		cfg.SetConfigFile(cfgFile)
@@ -76,13 +77,13 @@ func server() {
 	if err := cfg.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
 			// Config file not found; ignore error if desired
-			log.Println("No config file found")
+			hclog.Default().Named("core").Error("No config file found")
 		}
 	}
 
 	err := cfg.Unmarshal(&config)
 	if err != nil {
-		log.Fatalf("unable to decode into struct, %v", err)
+		hclog.Default().Named("core").Error(fmt.Sprintf("unable to decode into struct, %v", err))
 	}
 
 	// Creating a connection context
@@ -102,21 +103,37 @@ func server() {
 	config.VaultToken = cfg.GetString("vault_token")
 	config.VaultWrapResponse = cfg.GetBool("vault_wrap_response")
 
+	fmt.Println("==> Vauth server configuration:")
+	fmt.Println("")
+	mess := fmt.Sprintf(
+		"%24s: %s",
+		"API Address",
+		fmt.Sprintf("0.0.0.0:%s", config.UIPort))
+	fmt.Println(mess)
+	vauthVersion := fmt.Sprintf(
+		"%24s: %s",
+		"Version",
+		"vAuth v0.0.2")
+	fmt.Println(vauthVersion)
+	fmt.Println("")
+	fmt.Println("==> Vauth server started! Log data will stream in below:")
+	fmt.Println("")
+
 	vcenterURL, err := url.Parse(fmt.Sprintf("https://%v/sdk", config.VsphereServer))
 	if err != nil {
-		log.Println(err)
+		hclog.Default().Named("vsphere").Error(err.Error())
 	}
 	credentials := url.UserPassword(config.VsphereUsername, config.VspherePassword)
 	vcenterURL.User = credentials
 
 	// Connecting to vCenter
-	log.Print("connecting to vCenter server")
+	hclog.Default().Named("vsphere").Info("connecting to vCenter server")
 
 	vsphereClient, err = govmomi.NewClient(ctx, vcenterURL, true)
 	if err != nil {
-		log.Fatal(err)
+		hclog.Default().Named("vsphere").Error(err.Error())
 	}
-	log.Printf("connected to vCenter: %s", config.VsphereServer)
+	hclog.Default().Named("vsphere").Info(fmt.Sprintf("connected to vCenter: %s", config.VsphereServer))
 	finder := find.NewFinder(vsphereClient.Client, true)
 	db = database.StartDB(config.DataDir)
 
@@ -124,9 +141,10 @@ func server() {
 		// Iterate through dcs
 		dc, err := finder.DatacenterOrDefault(ctx, datacenter)
 		if err != nil {
-			log.Println(err)
+			hclog.Default().Named("vsphere").Error(err.Error())
 		}
-		log.Println(dc)
+
+		hclog.Default().Named("vsphere").Info(fmt.Sprintf("connected to vSphere datacenter: %s", dc.Name()))
 
 		finder.SetDatacenter(dc)
 		refs := []types.ManagedObjectReference{dc.Reference()}
@@ -139,7 +157,7 @@ func server() {
 		}
 	}
 
-	log.Println("ui listening on port", config.UIPort)
+	hclog.Default().Named("core").Info(fmt.Sprintf("ui listening on port %s", config.UIPort))
 	port := fmt.Sprintf(":%s", config.UIPort)
 
 	http.Handle("/", http.StripPrefix("/", clientHandler()))
@@ -164,7 +182,7 @@ func GetVsphereHealthStatus() string {
 	vSphereURL := fmt.Sprintf("https://%s", config.VsphereServer)
 	resp, err := httpClient.Get(vSphereURL)
 	if err != nil {
-		log.Println(err)
+		hclog.Default().Named("core").Error(err.Error())
 		return "unhealthy"
 	}
 	if resp.StatusCode == 200 {
@@ -186,7 +204,7 @@ func GetVaultHealthStatus() string {
 	VaultURL := fmt.Sprintf("%s/v1/sys/health", config.VaultAddress)
 	resp, err := httpClient.Get(VaultURL)
 	if err != nil {
-		log.Println(err)
+		hclog.Default().Named("core").Error(err.Error())
 		return "unhealthy"
 	}
 	if resp.StatusCode == 200 {
@@ -221,9 +239,9 @@ func handleEvent(ref types.ManagedObjectReference, events []types.BaseEvent) (er
 	for _, event := range events {
 		eventType := reflect.TypeOf(event).String()
 		// Detect VM power on events
-		if eventType == "*types.VmPoweredOnEvent" {
+		if eventType == "*types.VmPoweredOnEvent" || eventType == "*types.DrsVmPoweredOnEvent" {
 			vmName := event.GetEvent().Vm.Name
-			log.Printf("detected power on event for %s", vmName)
+			hclog.Default().Named("vsphere").Info(fmt.Sprintf("detected power on event for %s", vmName))
 			eventID := fmt.Sprintf("%d", event.GetEvent().ChainId)
 			if isUnprocessedEvent(event) {
 				role := updateVM(config.VaultAddress, config.VaultToken, vmName, event.GetEvent().Datacenter.Name)
@@ -239,7 +257,7 @@ func handleEvent(ref types.ManagedObjectReference, events []types.BaseEvent) (er
 		// Detect VM custom attribute change
 		if eventType == "*types.CustomFieldValueChangedEvent" {
 			vmName := event.GetEvent().Vm.Name
-			log.Printf("detected custom attribute change event for %s", vmName)
+			hclog.Default().Named("vsphere").Info(fmt.Sprintf("detected custom attribute change event for %s", vmName))
 			eventID := fmt.Sprintf("%d", event.GetEvent().ChainId)
 			if isUnprocessedEvent(event) {
 				role := updateVM(config.VaultAddress, config.VaultToken, vmName, event.GetEvent().Datacenter.Name)
@@ -255,9 +273,9 @@ func handleEvent(ref types.ManagedObjectReference, events []types.BaseEvent) (er
 		// Detect VM removal events
 		if eventType == "*types.VmRemovedEvent" {
 			vmName := event.GetEvent().Vm.Name
-			log.Printf("detected remove event for %s", vmName)
+			hclog.Default().Named("vsphere").Info(fmt.Sprintf("detected remove event for %s", vmName))
 			if isUnprocessedEvent(event) {
-				log.Printf("Delete VM: %s", vmName)
+				hclog.Default().Named("vsphere").Info(fmt.Sprintf("delete virtual machine: %s", vmName))
 				database.DeleteDBRecord(db, vmName)
 			}
 		}
@@ -270,7 +288,7 @@ func isUnprocessedEvent(event types.BaseEvent) (response bool) {
 	eventID := fmt.Sprintf("%d", event.GetEvent().ChainId)
 	eventIDInt, err := strconv.Atoi(eventID)
 	if err != nil {
-		log.Println(err)
+		hclog.Default().Named("core").Error(err.Error())
 	}
 	evalData := database.ViewDBRecord(db, vmName)
 	var evalParse utils.VMRecord
@@ -278,7 +296,7 @@ func isUnprocessedEvent(event types.BaseEvent) (response bool) {
 	if evalData != "" {
 		err = json.Unmarshal([]byte(evalData), &evalParse)
 		if err != nil {
-			log.Println(err)
+			hclog.Default().Named("core").Error(err.Error())
 		}
 		evalID = evalParse.LatestEventId
 	} else {
@@ -290,7 +308,7 @@ func isUnprocessedEvent(event types.BaseEvent) (response bool) {
 	} else {
 		evalIDInt, err = strconv.Atoi(evalID)
 		if err != nil {
-			log.Println(err)
+			hclog.Default().Named("core").Error(err.Error())
 		}
 	}
 
@@ -300,6 +318,7 @@ func isUnprocessedEvent(event types.BaseEvent) (response bool) {
 	return false
 }
 
+// updateVM updates the virtual machine with the secret material returned from vault
 func updateVM(vaultAddr string, token string, vmname string, datacenter string) (role string) {
 	// Creating a connection context
 	ctx, cancel := context.WithCancel(context.Background())
@@ -309,14 +328,14 @@ func updateVM(vaultAddr string, token string, vmname string, datacenter string) 
 
 	vsphereDatacenter, err := finder.DatacenterOrDefault(ctx, datacenter)
 	if err != nil {
-		log.Println(err)
+		hclog.Default().Named("vsphere").Error(err.Error())
 	}
 
 	finder.SetDatacenter(vsphereDatacenter)
 
 	machines, err := finder.VirtualMachineList(ctx, vmname)
 	if err != nil {
-		log.Println(err)
+		hclog.Default().Named("vsphere").Error(err.Error())
 	}
 	// Fetch IAM Role information
 	attkey, _ := object.GetCustomFieldsManager(vsphereClient.Client)
@@ -336,7 +355,7 @@ func updateVM(vaultAddr string, token string, vmname string, datacenter string) 
 						customAttrs[fmt.Sprint(fv.GetCustomFieldValue().Key)] = value
 					}
 					if fv.GetCustomFieldValue().Key == attID {
-						log.Printf("found the %s role associated with %s", value, vmname)
+						hclog.Default().Named("vsphere").Info(fmt.Sprintf("found the %s role associated with %s", value, vmname))
 						role = value
 					}
 				}
@@ -355,13 +374,14 @@ func updateVM(vaultAddr string, token string, vmname string, datacenter string) 
 						ExtraConfig: settings,
 					}
 					vmdata.Reconfigure(ctx, authSpec)
-					log.Printf("updated VM: %s", vmname)
+					hclog.Default().Named("vsphere").Info(fmt.Sprintf("updated virtual machine: %s", vmname))
 				}
 				if status == "role not found" {
-					log.Printf("the %s role associated with %s does not exist in Vault", role, vmname)
+					hclog.Default().Named("vault").Info(fmt.Sprintf("the %s role associated with %s does not exist in Vault", role, vmname))
 				}
 			} else {
-				log.Printf("no role associated with %s", vmname)
+				hclog.Default().Named("vsphere").Warn(fmt.Sprintf("no role associated with %s", vmname))
+
 			}
 		}
 	}

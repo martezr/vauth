@@ -1,3 +1,9 @@
 vauth
 vauth.db
 config.yaml
+main.tf
+terraform.*
+vault.tf
+install.sh
+vauth-vault-agent-helper
+.terraform

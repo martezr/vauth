@@ -2,8 +2,9 @@ package database
 
 import (
 	"encoding/json"
-	"log"
+	"fmt"
 
+	"github.com/hashicorp/go-hclog"
 	"github.com/martezr/vauth/utils"
 	bolt "go.etcd.io/bbolt"
 )
@@ -13,7 +14,7 @@ func StartDB(dbdir string) (database *bolt.DB) {
 	dbpath := dbdir + "/vauth.db"
 	db, err := bolt.Open(dbpath, 0600, nil)
 	if err != nil {
-		log.Fatal(err)
+		hclog.Default().Named("core").Error(err.Error())
 	}
 	err = db.Update(func(tx *bolt.Tx) error {
 		_, err := tx.CreateBucketIfNotExists([]byte("VirtualMachines"))
@@ -24,7 +25,7 @@ func StartDB(dbdir string) (database *bolt.DB) {
 	})
 
 	if err != nil {
-		log.Fatal(err)
+		hclog.Default().Named("core").Error(err.Error())
 	}
 	return db
 }
@@ -38,7 +39,7 @@ func AddDBRecord(db *bolt.DB, key string, data string) {
 			return err
 		}
 
-		log.Printf("vm record added: %s", data)
+		hclog.Default().Named("core").Info(fmt.Sprintf("vm record added: %s", data))
 		err = bucket.Put([]byte(key), []byte(data))
 		if err != nil {
 			return err
@@ -47,7 +48,7 @@ func AddDBRecord(db *bolt.DB, key string, data string) {
 	})
 
 	if err != nil {
-		log.Fatal(err)
+		hclog.Default().Named("core").Error(err.Error())
 	}
 }
 
@@ -56,7 +57,7 @@ func DeleteDBRecord(db *bolt.DB, key string) {
 	if err := db.Update(func(tx *bolt.Tx) error {
 		return tx.Bucket([]byte("VirtualMachines")).Delete([]byte(key))
 	}); err != nil {
-		log.Fatal(err)
+		hclog.Default().Named("core").Error(err.Error())
 	}
 }
 
@@ -69,7 +70,7 @@ func ViewDBRecord(db *bolt.DB, key string) (data string) {
 		return nil
 	})
 	if err != nil {
-		log.Fatal(err)
+		hclog.Default().Named("core").Error(err.Error())
 	}
 	return data
 }
@@ -83,7 +84,7 @@ func ListDBRecords(db *bolt.DB) (vms []utils.VMRecord) {
 			var testdata utils.VMRecord
 			err := json.Unmarshal([]byte(v), &testdata)
 			if err != nil {
-				log.Println(err)
+				hclog.Default().Named("core").Error(err.Error())
 			}
 			vmdata.Name = string(k)
 			vmdata.LatestEventId = testdata.LatestEventId
@@ -97,7 +98,7 @@ func ListDBRecords(db *bolt.DB) (vms []utils.VMRecord) {
 		return nil
 	})
 	if err != nil {
-		log.Fatal(err)
+		hclog.Default().Named("core").Error(err.Error())
 	}
 	return vms
 }

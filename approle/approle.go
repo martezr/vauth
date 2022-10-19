@@ -4,11 +4,11 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
 	"time"
 
+	"github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/vault/api"
 	"github.com/martezr/vauth/utils"
 )
@@ -49,7 +49,7 @@ func FetchAppRole(config utils.Config, vaultAddr string, token string, rolename 
 	}
 
 	if !pathExists {
-		log.Printf("unable to find %s mount point", config.VaultAppRoleMount)
+		hclog.Default().Info(fmt.Sprintf("unable to find %s mount point", config.VaultAppRoleMount))
 		return "role not found", "", "", ""
 	}
 
@@ -59,7 +59,7 @@ func FetchAppRole(config utils.Config, vaultAddr string, token string, rolename 
 	logError(roleerr)
 
 	if roles == nil {
-		log.Printf("%s contains no roles", config.VaultAppRoleMount)
+		hclog.Default().Info(fmt.Sprintf("%s contains no roles", config.VaultAppRoleMount))
 		return "role not found", "", "", ""
 	}
 
@@ -98,10 +98,10 @@ func FetchAppRole(config utils.Config, vaultAddr string, token string, rolename 
 
 		if config.VaultWrapResponse {
 			if secretdata == nil {
-				log.Println("nil secret")
+				hclog.Default().Named("vault").Warn("nil secret")
 			}
 			if secretdata.WrapInfo == nil {
-				log.Println("nil wrap info")
+				hclog.Default().Named("vault").Warn("nil wrap info")
 			}
 
 			token := secretdata.WrapInfo.Token
@@ -124,6 +124,6 @@ func FetchAppRole(config utils.Config, vaultAddr string, token string, rolename 
 // logError logs error messages
 func logError(errormessage error) {
 	if errormessage != nil {
-		log.Println(errormessage)
+		hclog.Default().Named("vault").Error(errormessage.Error())
 	}
 }

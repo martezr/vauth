@@ -113,7 +113,7 @@ func server() {
 	vauthVersion := fmt.Sprintf(
 		"%24s: %s",
 		"Version",
-		"vAuth v0.0.2")
+		"vAuth v0.0.3")
 	fmt.Println(vauthVersion)
 	fmt.Println("")
 	fmt.Println("==> Vauth server started! Log data will stream in below:")
@@ -217,7 +217,7 @@ func GetVaultHealthStatus() string {
 // GetHealthStatus returns the health of the vAuth platform
 func GetHealthStatus(w http.ResponseWriter, r *http.Request) {
 	var output utils.HealthStatus
-	output.Version = "0.0.1"
+	output.Version = "0.0.3"
 	output.VaultStatus = GetVaultHealthStatus()
 	output.VsphereStatus = GetVsphereHealthStatus()
 	jsonOutput, _ := json.MarshalIndent(output, "", " ")

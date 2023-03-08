@@ -15,6 +15,6 @@ var versionCmd = &cobra.Command{
 	Short: "Print the version number of vAuth",
 	Long:  `Show this help output, or the help for a specified subcommand.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("vAuth v0.0.1")
+		fmt.Println("vAuth v0.0.3")
 	},
 }

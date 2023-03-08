@@ -88,7 +88,7 @@ The vAuth platform can be deployed using the vAuth binary on linux systems.
 1. Download the vAuth binary from the latest Github release
 
 ```bash
-export VAUTH_VERSION="0.0.1"
+export VAUTH_VERSION="0.0.2"
 ```
 
 ```bash
